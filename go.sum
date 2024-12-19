@@ -40,6 +40,7 @@ github.com/ralvarezdev/go-flags v0.2.1/go.mod h1:pYw9H7NJ07Y5asZDC/EI5bpBLR0kdL2
 github.com/ralvarezdev/go-jwt v0.1.0 h1:GNgzK1F9bldIacS48lQ858rjp1fr714B18v87BBwppA=
 github.com/ralvarezdev/go-jwt v0.1.0/go.mod h1:BPy5F1/CufL7bGRVUa5qgzva56g3PdiQXSbchqmoAOg=
 github.com/ralvarezdev/go-jwt v0.2.0/go.mod h1:BPy5F1/CufL7bGRVUa5qgzva56g3PdiQXSbchqmoAOg=
+github.com/ralvarezdev/go-jwt v0.2.1/go.mod h1:CKxcQ+o7CMqMd2/2UYEOSbk3yqDyu1NnVZWsxjwpayI=
 github.com/ralvarezdev/go-loader v0.1.0 h1:f/BVbO53bgWBnMMsHRHg9kJSEcaEc3ikH6N6tIjm5is=
 github.com/ralvarezdev/go-loader v0.1.0/go.mod h1:XEgz5P7sMISBey2UqO8RlWtnfctNboKq7gU50BrvA2c=
 github.com/ralvarezdev/go-logger v0.1.0 h1:i2AI1nlxU6Hizvk75Vc8wtFydiVrqIeeRbJwiuO/69A=

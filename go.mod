@@ -4,7 +4,7 @@ go 1.23.4
 
 require (
 	github.com/ralvarezdev/go-flags v0.2.1
-	github.com/ralvarezdev/go-jwt v0.2.0
+	github.com/ralvarezdev/go-jwt v0.2.1
 	github.com/ralvarezdev/go-loader v0.1.0
 	github.com/ralvarezdev/go-logger v0.1.0
 	go.mongodb.org/mongo-driver v1.17.1
