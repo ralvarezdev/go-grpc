@@ -27,7 +27,7 @@ func NewInterceptor(
 ) (*Interceptor, error) {
 	// Check if the token source is nil
 	if tokenSource == nil {
-		return nil, goloadergcloud.NilTokenSourceError
+		return nil, goloadergcloud.ErrNilTokenSource
 	}
 
 	// Get the access token from the token source
@@ -38,7 +38,7 @@ func NewInterceptor(
 
 	// Check if the gRPC interceptions is nil
 	if grpcInterceptions == nil {
-		return nil, gojwtgrpc.NilGRPCInterceptionsError
+		return nil, gojwtgrpc.ErrNilGRPCInterceptions
 	}
 
 	return &Interceptor{
@@ -67,7 +67,10 @@ func (i *Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 			// Get metadata from the context
 			md, ok := metadata.FromOutgoingContext(ctx)
 			if !ok {
-				return status.Error(codes.Unauthenticated, gojwtgrpc.MissingMetadataError.Error())
+				return status.Error(
+					codes.Unauthenticated,
+					gojwtgrpc.ErrMissingMetadata.Error(),
+				)
 			}
 
 			// Get the raw token from the metadata
@@ -77,7 +80,10 @@ func (i *Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 			}
 
 			// Create the authenticated context metadata
-			ctxMetadata, err = gogrpcclientmd.NewAuthenticatedCtxMetadata(i.accessToken, rawToken)
+			ctxMetadata, err = gogrpcclientmd.NewAuthenticatedCtxMetadata(
+				i.accessToken,
+				rawToken,
+			)
 		}
 
 		// Check if there was an error

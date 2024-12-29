@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	NilMetadataFieldsError = errors.New("metadata fields cannot be nil")
+	ErrNilMetadataFields = errors.New("metadata fields cannot be nil")
 )

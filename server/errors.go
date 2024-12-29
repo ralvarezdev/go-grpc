@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	TokenHasExpiredError = errors.New("token has expired")
+	ErrTokenHasExpired = errors.New("token has expired")
 )

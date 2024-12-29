@@ -11,7 +11,7 @@ import (
 func GetClientIP(ctx context.Context) (string, error) {
 	p, ok := peer.FromContext(ctx)
 	if !ok {
-		return "", FailedToGetPeerFromContextError
+		return "", ErrFailedToGetPeerFromContext
 	}
 
 	// Get the IP address from the peer address

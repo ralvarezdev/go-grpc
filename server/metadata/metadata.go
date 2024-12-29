@@ -14,7 +14,7 @@ func GetTokenFromMetadata(md metadata.MD, tokenKey string) (string, error) {
 	authorization := md.Get(tokenKey)
 	tokenIdx := gojwtgrpc.TokenIdx.Int()
 	if len(authorization) <= tokenIdx {
-		return "", gojwtgrpc.AuthorizationMetadataNotProvidedError
+		return "", gojwtgrpc.ErrAuthorizationMetadataNotProvided
 	}
 
 	// Get the authorization value from the metadata
@@ -25,7 +25,7 @@ func GetTokenFromMetadata(md metadata.MD, tokenKey string) (string, error) {
 
 	// Check if the authorization value is valid
 	if len(authorizationFields) != 2 || authorizationFields[0] != gojwt.BearerPrefix {
-		return "", gojwtgrpc.AuthorizationMetadataInvalidError
+		return "", gojwtgrpc.ErrAuthorizationMetadataInvalid
 	}
 
 	return authorizationFields[1], nil

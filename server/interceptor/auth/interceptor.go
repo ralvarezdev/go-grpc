@@ -30,10 +30,10 @@ func NewInterceptor(
 ) (*Interceptor, error) {
 	// Check if either the validator or the gRPC interceptions is nil
 	if validator == nil {
-		return nil, gojwtvalidator.NilValidatorError
+		return nil, gojwtvalidator.ErrNilValidator
 	}
 	if grpcInterceptions == nil {
-		return nil, gojwtgrpc.NilGRPCInterceptionsError
+		return nil, gojwtgrpc.ErrNilGRPCInterceptions
 	}
 
 	return &Interceptor{
@@ -57,7 +57,10 @@ func (i *Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		// Get metadata from the context
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			return nil, status.Error(codes.Unauthenticated, gojwtgrpc.MissingMetadataError.Error())
+			return nil, status.Error(
+				codes.Unauthenticated,
+				gojwtgrpc.ErrMissingMetadata.Error(),
+			)
 		}
 
 		// Get the raw token from the metadata
@@ -69,15 +72,18 @@ func (i *Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		// Validate the token and get the validated claims
 		claims, err := i.validator.GetValidatedClaims(rawToken, interception)
 		if err != nil {
-			if errors.Is(err, gojwtvalidator.NilClaimsError) {
+			if errors.Is(err, gojwtvalidator.ErrNilClaims) {
 				return nil, status.Error(codes.Unauthenticated, err.Error())
 			}
 
 			if errors.Is(err, mongo.ErrNoDocuments) {
-				return nil, status.Error(codes.Unauthenticated, gogrpcserver.TokenHasExpiredError.Error())
+				return nil, status.Error(
+					codes.Unauthenticated,
+					gogrpcserver.ErrTokenHasExpired.Error(),
+				)
 			}
 
-			return nil, status.Error(codes.Internal, gogrpc.InternalServerError.Error())
+			return nil, status.Error(codes.Internal, gogrpc.InternalServerError)
 		}
 
 		// Set the raw token and token claims to the context

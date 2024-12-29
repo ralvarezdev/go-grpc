@@ -1,9 +1,9 @@
 package go_grpc
 
 import (
-	"errors"
+	"net/http"
 )
 
 var (
-	InternalServerError = errors.New("internal server error")
+	InternalServerError = http.StatusText(http.StatusInternalServerError)
 )

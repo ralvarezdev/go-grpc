@@ -9,19 +9,17 @@ import (
 )
 
 // ExtractErrorFromStatus extracts the error from the status
-func ExtractErrorFromStatus(mode *goflagsmode.Flag, err error) (codes.Code, error) {
-	// Check if the flag mode is nil
-	if mode == nil {
-		return codes.Unknown, goflagsmode.NilModeFlagError
-	}
-
+func ExtractErrorFromStatus(mode *goflagsmode.Flag, err error) (
+	codes.Code,
+	error,
+) {
 	st, ok := status.FromError(err)
 
 	// Check if the error is a status error
 	if !ok {
 		// Check the flag mode
-		if mode.IsProd() {
-			return codes.Internal, gogrpc.InternalServerError
+		if mode != nil && mode.IsProd() {
+			return codes.Internal, errors.New(gogrpc.InternalServerError)
 		}
 		return codes.Internal, err
 	}

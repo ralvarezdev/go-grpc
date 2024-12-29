@@ -14,7 +14,7 @@ type Logger struct {
 func NewLogger(logger gologger.Logger) (*Logger, error) {
 	// Check if the logger is nil
 	if logger == nil {
-		return nil, gologger.NilLoggerError
+		return nil, gologger.ErrNilLogger
 	}
 
 	return &Logger{logger: logger}, nil
@@ -23,5 +23,12 @@ func NewLogger(logger gologger.Logger) (*Logger, error) {
 // LogKeyValue logs the key value
 func (l *Logger) LogKeyValue(key string, value string) {
 	formattedKey := "Outgoing context key '" + key + "' value"
-	l.logger.LogMessage(gologger.NewLogMessage(formattedKey, gologgerstatus.StatusDebug, nil, value))
+	l.logger.LogMessage(
+		gologger.NewLogMessage(
+			formattedKey,
+			gologgerstatus.StatusDebug,
+			nil,
+			value,
+		),
+	)
 }

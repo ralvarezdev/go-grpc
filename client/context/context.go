@@ -14,7 +14,7 @@ func GetOutgoingCtx(ctx context.Context) (context.Context, error) {
 	rawToken, err := gojwtgrpcctx.GetCtxRawToken(ctx)
 	if err != nil {
 		// Check if the raw token is missing
-		if errors.Is(err, gojwtgrpcctx.MissingTokenError) {
+		if errors.Is(err, gojwtgrpcctx.ErrMissingToken) {
 			return context.Background(), nil
 		}
 		return nil, err

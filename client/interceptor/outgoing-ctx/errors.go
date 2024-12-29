@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	FailedToGetOutgoingContextError = errors.New(
+	ErrFailedToGetOutgoingContext = errors.New(
 		"failed to get outgoing context",
 	)
 )

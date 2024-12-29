@@ -18,7 +18,7 @@ type Interceptor struct {
 func NewInterceptor(logger *Logger) (*Interceptor, error) {
 	// Check if the logger is nil
 	if logger == nil {
-		return nil, gologger.NilLoggerError
+		return nil, gologger.ErrNilLogger
 	}
 
 	return &Interceptor{
@@ -39,7 +39,10 @@ func (i *Interceptor) PrintOutgoingCtx() grpc.UnaryClientInterceptor {
 		// Get the outgoing context
 		md, ok := metadata.FromOutgoingContext(ctx)
 		if !ok {
-			return status.Error(codes.Internal, FailedToGetOutgoingContextError.Error())
+			return status.Error(
+				codes.Internal,
+				ErrFailedToGetOutgoingContext.Error(),
+			)
 		}
 
 		// Print the metadata

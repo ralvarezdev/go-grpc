@@ -5,5 +5,5 @@ import (
 )
 
 var (
-	NilClientError = errors.New("client is nil")
+	ErrNilClient = errors.New("client is nil")
 )

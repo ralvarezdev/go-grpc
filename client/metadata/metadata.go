@@ -26,7 +26,7 @@ type (
 func NewCtxMetadata(metadataFields *map[string]string) (*CtxMetadata, error) {
 	// Check if the metadata fields are nil
 	if metadataFields == nil {
-		return nil, NilMetadataFieldsError
+		return nil, ErrNilMetadataFields
 	}
 
 	// Add the metadata fields
