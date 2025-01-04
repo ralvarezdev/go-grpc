@@ -26,8 +26,7 @@ func (l *Logger) LogKeyValue(key string, value string) {
 	l.logger.LogMessage(
 		gologger.NewLogMessage(
 			formattedKey,
-			gologgerstatus.StatusDebug,
-			nil,
+			gologgerstatus.Debug,
 			value,
 		),
 	)

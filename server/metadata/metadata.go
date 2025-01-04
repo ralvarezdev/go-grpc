@@ -1,9 +1,9 @@
 package metadata
 
 import (
+	gogrpcgcloud "github.com/ralvarezdev/go-grpc/cloud/gcloud"
 	gojwt "github.com/ralvarezdev/go-jwt"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
-	goloadergcloud "github.com/ralvarezdev/go-loader/cloud/gcloud"
 	"google.golang.org/grpc/metadata"
 	"strings"
 )
@@ -12,13 +12,12 @@ import (
 func GetTokenFromMetadata(md metadata.MD, tokenKey string) (string, error) {
 	// Get the authorization from the metadata
 	authorization := md.Get(tokenKey)
-	tokenIdx := gojwtgrpc.TokenIdx.Int()
-	if len(authorization) <= tokenIdx {
+	if len(authorization) <= gojwtgrpc.AuthorizationTokenIdx {
 		return "", gojwtgrpc.ErrAuthorizationMetadataNotProvided
 	}
 
 	// Get the authorization value from the metadata
-	authorizationValue := authorization[tokenIdx]
+	authorizationValue := authorization[gojwtgrpc.AuthorizationTokenIdx]
 
 	// Split the authorization value by space
 	authorizationFields := strings.Split(authorizationValue, " ")
@@ -38,5 +37,5 @@ func GetAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
 
 // GetGCloudAuthorizationTokenFromMetadata gets the GCloud authorization token from the metadata
 func GetGCloudAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
-	return GetTokenFromMetadata(md, goloadergcloud.AuthorizationMetadataKey)
+	return GetTokenFromMetadata(md, gogrpcgcloud.AuthorizationMetadataKey)
 }

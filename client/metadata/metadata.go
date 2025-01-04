@@ -2,9 +2,9 @@ package metadata
 
 import (
 	"context"
+	gogrpcgcloud "github.com/ralvarezdev/go-grpc/cloud/gcloud"
 	gojwt "github.com/ralvarezdev/go-jwt"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
-	goloadergcloud "github.com/ralvarezdev/go-loader/cloud/gcloud"
 	"google.golang.org/grpc/metadata"
 	"strings"
 )
@@ -47,7 +47,7 @@ func NewCtxMetadata(metadataFields *map[string]string) (*CtxMetadata, error) {
 func NewUnauthenticatedCtxMetadata(gcloudToken string) (*CtxMetadata, error) {
 	return NewCtxMetadata(
 		&map[string]string{
-			goloadergcloud.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + gcloudToken,
+			gogrpcgcloud.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + gcloudToken,
 		},
 	)
 }
@@ -58,8 +58,8 @@ func NewAuthenticatedCtxMetadata(
 ) (*CtxMetadata, error) {
 	return NewCtxMetadata(
 		&map[string]string{
-			goloadergcloud.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + gcloudToken,
-			gojwtgrpc.AuthorizationMetadataKey:      gojwt.BearerPrefix + " " + jwtToken,
+			gogrpcgcloud.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + gcloudToken,
+			gojwtgrpc.AuthorizationMetadataKey:    gojwt.BearerPrefix + " " + jwtToken,
 		},
 	)
 }
@@ -89,7 +89,7 @@ func AppendGCloudTokenToOutgoingContext(
 ) context.Context {
 	return metadata.AppendToOutgoingContext(
 		ctx,
-		goloadergcloud.AuthorizationMetadataKey,
+		gogrpcgcloud.AuthorizationMetadataKey,
 		gojwt.BearerPrefix+" "+gcloudToken,
 	)
 }
