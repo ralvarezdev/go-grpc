@@ -42,6 +42,7 @@ github.com/ralvarezdev/go-flags v0.2.3/go.mod h1:xc0ii1VySdiV/s17KRo1GJ6bLxy5eOv
 github.com/ralvarezdev/go-flags v0.2.5 h1:SCD/H8qDL5mPHqIuBpHdURgATF3c9rm+OWUNwnV0uKs=
 github.com/ralvarezdev/go-flags v0.2.5/go.mod h1:5uCMKlCrSOon33DPwVQqLVkokl984YDGDT7QbxY8jDU=
 github.com/ralvarezdev/go-flags v0.3.0/go.mod h1:R3yVBYvzwqfOp26LidaiJ/zftVAnPC3pKunVpV/vosE=
+github.com/ralvarezdev/go-flags v0.3.1/go.mod h1:R3yVBYvzwqfOp26LidaiJ/zftVAnPC3pKunVpV/vosE=
 github.com/ralvarezdev/go-jwt v0.1.0 h1:GNgzK1F9bldIacS48lQ858rjp1fr714B18v87BBwppA=
 github.com/ralvarezdev/go-jwt v0.1.0/go.mod h1:BPy5F1/CufL7bGRVUa5qgzva56g3PdiQXSbchqmoAOg=
 github.com/ralvarezdev/go-jwt v0.2.0/go.mod h1:BPy5F1/CufL7bGRVUa5qgzva56g3PdiQXSbchqmoAOg=
@@ -52,12 +53,17 @@ github.com/ralvarezdev/go-jwt v0.3.1/go.mod h1:Yo+HExsp8k7Fd/WDn4SOF3lnLzBnfR6Sq
 github.com/ralvarezdev/go-jwt v0.3.4/go.mod h1:Tq6xz+T0+kxsL7YBKgu6UvjyjsJmm7YDtpj+1E3Gta4=
 github.com/ralvarezdev/go-jwt v0.3.5/go.mod h1:kNPxRcDbdj3w5ILlgZGa/WyXgDAzFgLyu3JLK9Ie94c=
 github.com/ralvarezdev/go-jwt v0.3.7/go.mod h1:kNPxRcDbdj3w5ILlgZGa/WyXgDAzFgLyu3JLK9Ie94c=
+github.com/ralvarezdev/go-jwt v0.3.10/go.mod h1:BY84MfdIAKo9NBrSe5rXDBj4X8BRLRtyRmDLMCsGriw=
+github.com/ralvarezdev/go-jwt v0.3.11/go.mod h1:sRUKQjyWXYVKVJ8PLQcQta1tJVsnbXIx58+qi7tkQ38=
 github.com/ralvarezdev/go-loader v0.1.0 h1:f/BVbO53bgWBnMMsHRHg9kJSEcaEc3ikH6N6tIjm5is=
 github.com/ralvarezdev/go-loader v0.1.0/go.mod h1:XEgz5P7sMISBey2UqO8RlWtnfctNboKq7gU50BrvA2c=
 github.com/ralvarezdev/go-loader v0.2.2 h1:sg8DwXblHv1/X00h3TgWNPtH+cSh1Vw2BaLsahGsLvs=
 github.com/ralvarezdev/go-loader v0.2.2/go.mod h1:YNkLXmM3DUQAMpBzct02foddri1VODY7iK4vElIWibE=
 github.com/ralvarezdev/go-loader v0.2.3/go.mod h1:YNkLXmM3DUQAMpBzct02foddri1VODY7iK4vElIWibE=
 github.com/ralvarezdev/go-loader v0.2.6/go.mod h1:wswhqUg/qCfwFFLVH0BvCp3Z9v/ajPMDBMlQJ0/ljSY=
+github.com/ralvarezdev/go-loader v0.2.9 h1:YbT4/u45kcgOg+OXGqW8D6gyzSsktsovrVXk3IfBz8E=
+github.com/ralvarezdev/go-loader v0.2.9/go.mod h1:+NaJWkDONs1lMc6ilkN4l22sxYt2Sf/M1kQ04TMztio=
+github.com/ralvarezdev/go-loader v0.2.10/go.mod h1:t4BWQIBC+bJLMwMYyyevJZJAoE3p8CiJGGxbkXdk+F8=
 github.com/ralvarezdev/go-logger v0.1.0 h1:i2AI1nlxU6Hizvk75Vc8wtFydiVrqIeeRbJwiuO/69A=
 github.com/ralvarezdev/go-logger v0.1.0/go.mod h1:v5OvFrkS+wsYNTCVegXWiRhBtcYrQJr4LDMDntvpAos=
 github.com/ralvarezdev/go-logger v0.2.2 h1:j58spza2L6s+vAibifHSuUPrXm0+6nWZWR3SOg8ihBk=
@@ -66,6 +72,7 @@ github.com/ralvarezdev/go-logger v0.3.0 h1:KjIA2NEEPsHy8vOpdPYO21fCMEx8XmbIfhRlq
 github.com/ralvarezdev/go-logger v0.3.0/go.mod h1:v5OvFrkS+wsYNTCVegXWiRhBtcYrQJr4LDMDntvpAos=
 github.com/ralvarezdev/go-logger v0.4.3 h1:Fat1PyHr1zoVVbX88Nb4FiIkw1WYdzEhgIqkU2nf8bE=
 github.com/ralvarezdev/go-logger v0.4.3/go.mod h1:IUxZUO1YOByDagoOfFnmz2EHD30Z9TPufXrkDlucWTM=
+github.com/ralvarezdev/go-logger v0.4.4/go.mod h1:oOZtH3SM9tyvfxeJi0dnDEYPPM+ZZ07ItVv2bPawyPk=
 github.com/stretchr/testify v1.9.0 h1:HtqpIVDClZ4nwg75+f6Lvsy/wHu+3BoSGCbBAcpTsTg=
 github.com/stretchr/testify v1.9.0/go.mod h1:r2ic/lqez/lEtzL7wO/rwa5dbSLXVDPFyf8C91i36aY=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=

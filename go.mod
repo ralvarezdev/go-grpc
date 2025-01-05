@@ -3,10 +3,10 @@ module github.com/ralvarezdev/go-grpc
 go 1.23.4
 
 require (
-	github.com/ralvarezdev/go-flags v0.3.0
-	github.com/ralvarezdev/go-jwt v0.3.7
-	github.com/ralvarezdev/go-loader v0.2.6
-	github.com/ralvarezdev/go-logger v0.4.3
+	github.com/ralvarezdev/go-flags v0.3.1
+	github.com/ralvarezdev/go-jwt v0.3.11
+	github.com/ralvarezdev/go-loader v0.2.10
+	github.com/ralvarezdev/go-logger v0.4.4
 	go.mongodb.org/mongo-driver v1.17.1
 	google.golang.org/grpc v1.69.2
 )
