@@ -3,10 +3,10 @@ module github.com/ralvarezdev/go-grpc
 go 1.23.4
 
 require (
-	github.com/ralvarezdev/go-flags v0.3.1
-	github.com/ralvarezdev/go-jwt v0.3.12
-	github.com/ralvarezdev/go-loader v0.2.11
-	github.com/ralvarezdev/go-logger v0.4.5
+	github.com/ralvarezdev/go-flags v0.3.2
+	github.com/ralvarezdev/go-jwt v0.4.9
+	github.com/ralvarezdev/go-loader v0.2.14
+	github.com/ralvarezdev/go-logger v0.4.6
 	go.mongodb.org/mongo-driver v1.17.2
 	google.golang.org/grpc v1.69.2
 )
@@ -25,7 +25,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.14.1 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
-	github.com/ralvarezdev/go-strings v0.1.0 // indirect
+	github.com/ralvarezdev/go-strings v0.1.7 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect

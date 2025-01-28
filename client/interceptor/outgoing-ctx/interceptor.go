@@ -22,7 +22,7 @@ func NewInterceptor(logger *Logger) (*Interceptor, error) {
 	}
 
 	return &Interceptor{
-		logger: logger,
+		logger,
 	}, nil
 }
 

@@ -37,8 +37,8 @@ func NewInterceptor(
 	}
 
 	return &Interceptor{
-		validator:         validator,
-		grpcInterceptions: grpcInterceptions,
+		validator,
+		grpcInterceptions,
 	}, nil
 }
 

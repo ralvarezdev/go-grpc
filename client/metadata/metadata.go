@@ -12,13 +12,13 @@ import (
 type (
 	// Field is a field in the metadata
 	Field struct {
-		Key   string
-		Value string
+		key   string
+		value string
 	}
 
 	// CtxMetadata is the metadata for the context
 	CtxMetadata struct {
-		Fields []Field
+		fields []Field
 	}
 )
 
@@ -34,12 +34,12 @@ func NewCtxMetadata(metadataFields *map[string]string) (*CtxMetadata, error) {
 	for key, value := range *metadataFields {
 		fields = append(
 			fields,
-			Field{Key: strings.ToLower(key), Value: value},
+			Field{key: strings.ToLower(key), value: value},
 		)
 	}
 
 	return &CtxMetadata{
-		Fields: fields,
+		fields,
 	}, nil
 }
 
@@ -77,8 +77,8 @@ func GetCtxWithMetadata(
 	md := metadata.Pairs()
 
 	// Add the metadata to the context
-	for _, field := range ctxMetadata.Fields {
-		md.Append(field.Key, field.Value)
+	for _, field := range ctxMetadata.fields {
+		md.Append(field.key, field.value)
 	}
 	return metadata.NewOutgoingContext(ctx, md)
 }
