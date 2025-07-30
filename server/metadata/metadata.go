@@ -1,11 +1,12 @@
 package metadata
 
 import (
+	"strings"
+
 	gogrpcgcloud "github.com/ralvarezdev/go-grpc/cloud/gcloud"
 	gojwt "github.com/ralvarezdev/go-jwt"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	"google.golang.org/grpc/metadata"
-	"strings"
 )
 
 // GetTokenFromMetadata gets the token from the metadata

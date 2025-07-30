@@ -2,6 +2,7 @@ package status
 
 import (
 	"errors"
+
 	goflagsmode "github.com/ralvarezdev/go-flags/mode"
 	gogrpc "github.com/ralvarezdev/go-grpc"
 	"google.golang.org/grpc/codes"

@@ -3,12 +3,13 @@ package auth
 import (
 	"context"
 	"errors"
+
 	gogrpc "github.com/ralvarezdev/go-grpc"
 	gogrpcserver "github.com/ralvarezdev/go-grpc/server"
 	gogrpcservermd "github.com/ralvarezdev/go-grpc/server/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwtgrpcmd "github.com/ralvarezdev/go-jwt/grpc/context"
-	gojwtinterception "github.com/ralvarezdev/go-jwt/token/interception"
+	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	gojwtvalidator "github.com/ralvarezdev/go-jwt/token/validator"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
@@ -19,26 +20,26 @@ import (
 
 // Interceptor is the interceptor for the authentication
 type Interceptor struct {
-	validator         gojwtvalidator.Validator
-	grpcInterceptions *map[string]gojwtinterception.Interception
+	validator     gojwtvalidator.Validator
+	interceptions *map[string]*gojwttoken.Token
 }
 
 // NewInterceptor creates a new authentication interceptor
 func NewInterceptor(
 	validator gojwtvalidator.Validator,
-	grpcInterceptions *map[string]gojwtinterception.Interception,
+	interceptions *map[string]*gojwttoken.Token,
 ) (*Interceptor, error) {
 	// Check if either the validator or the gRPC interceptions is nil
 	if validator == nil {
 		return nil, gojwtvalidator.ErrNilValidator
 	}
-	if grpcInterceptions == nil {
+	if interceptions == nil {
 		return nil, gojwtgrpc.ErrNilGRPCInterceptions
 	}
 
 	return &Interceptor{
 		validator,
-		grpcInterceptions,
+		interceptions,
 	}, nil
 }
 
@@ -49,8 +50,8 @@ func (i *Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		// Check if the method should be intercepted
-		interception, ok := (*i.grpcInterceptions)[info.FullMethod]
-		if !ok || interception == gojwtinterception.None {
+		interception, ok := (*i.interceptions)[info.FullMethod]
+		if !ok || interception == nil {
 			return handler(ctx, req)
 		}
 
@@ -70,7 +71,7 @@ func (i *Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Validate the token and get the validated claims
-		claims, err := i.validator.GetValidatedClaims(rawToken, interception)
+		claims, err := i.validator.ValidateClaims(rawToken, *interception)
 		if err != nil {
 			if errors.Is(err, gojwtvalidator.ErrNilClaims) {
 				return nil, status.Error(codes.Unauthenticated, err.Error())

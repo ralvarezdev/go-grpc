@@ -3,6 +3,7 @@ package context
 import (
 	"context"
 	"errors"
+
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwtgrpcctx "github.com/ralvarezdev/go-jwt/grpc/context"
 	"google.golang.org/grpc/metadata"

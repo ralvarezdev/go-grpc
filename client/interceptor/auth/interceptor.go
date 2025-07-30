@@ -2,10 +2,11 @@ package auth
 
 import (
 	"context"
+
 	gogrpcclientmd "github.com/ralvarezdev/go-grpc/client/metadata"
 	gogrpcservermd "github.com/ralvarezdev/go-grpc/server/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
-	gojwtinterception "github.com/ralvarezdev/go-jwt/token/interception"
+	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	goloadergcloud "github.com/ralvarezdev/go-loader/cloud/gcloud"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -16,14 +17,14 @@ import (
 
 // Interceptor is the interceptor for the authentication
 type Interceptor struct {
-	accessToken       string
-	grpcInterceptions *map[string]gojwtinterception.Interception
+	accessToken   string
+	interceptions *map[string]*gojwttoken.Token
 }
 
 // NewInterceptor creates a new authentication interceptor
 func NewInterceptor(
 	tokenSource *oauth.TokenSource,
-	grpcInterceptions *map[string]gojwtinterception.Interception,
+	interceptions *map[string]*gojwttoken.Token,
 ) (*Interceptor, error) {
 	// Check if the token source is nil
 	if tokenSource == nil {
@@ -37,13 +38,13 @@ func NewInterceptor(
 	}
 
 	// Check if the gRPC interceptions is nil
-	if grpcInterceptions == nil {
+	if interceptions == nil {
 		return nil, gojwtgrpc.ErrNilGRPCInterceptions
 	}
 
 	return &Interceptor{
-		accessToken:       token.AccessToken,
-		grpcInterceptions: grpcInterceptions,
+		accessToken:   token.AccessToken,
+		interceptions: interceptions,
 	}, nil
 }
 
@@ -59,8 +60,8 @@ func (i *Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 	) (err error) {
 		// Check if the method should be intercepted
 		var ctxMetadata *gogrpcclientmd.CtxMetadata
-		interception, ok := (*i.grpcInterceptions)[method]
-		if !ok || interception == gojwtinterception.None {
+		interception, ok := (*i.interceptions)[method]
+		if !ok || interception == nil {
 			// Create the unauthenticated context metadata
 			ctxMetadata, err = gogrpcclientmd.NewUnauthenticatedCtxMetadata(i.accessToken)
 		} else {

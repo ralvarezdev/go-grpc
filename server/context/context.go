@@ -2,9 +2,10 @@ package context
 
 import (
 	"context"
-	"google.golang.org/grpc/peer"
 	"net"
 	"strings"
+
+	"google.golang.org/grpc/peer"
 )
 
 // GetClientIP extracts the client IP address from the context
