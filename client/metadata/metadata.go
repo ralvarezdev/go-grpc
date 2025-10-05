@@ -18,47 +18,91 @@ type (
 	}
 
 	// CtxMetadata is the metadata for the context
-	CtxMetadata struct {
-		fields []Field
-	}
+	CtxMetadata []Field
 )
 
 // NewCtxMetadata creates a new CtxMetadata
-func NewCtxMetadata(metadataFields *map[string]string) (*CtxMetadata, error) {
+//
+// Parameters:
+//
+//   - metadataFields: The metadata fields to add to the context
+//
+// Returns:
+//
+//   - CtxMetadata: The context metadata
+//   - error: An error if the metadata fields are nil or any other error occurs
+func NewCtxMetadata(metadataFields map[string]string) (CtxMetadata, error) {
 	// Check if the metadata fields are nil
 	if metadataFields == nil {
 		return nil, ErrNilMetadataFields
 	}
 
 	// Add the metadata fields
-	var fields []Field
-	for key, value := range *metadataFields {
-		fields = append(
-			fields,
+	var ctxMetadata CtxMetadata
+	for key, value := range metadataFields {
+		ctxMetadata = append(
+			ctxMetadata,
 			Field{key: strings.ToLower(key), value: value},
 		)
 	}
 
-	return &CtxMetadata{
-		fields,
-	}, nil
+	return ctxMetadata, nil
 }
 
-// NewUnauthenticatedCtxMetadata creates a new unauthenticated CtxMetadata
-func NewUnauthenticatedCtxMetadata(gcloudToken string) (*CtxMetadata, error) {
+// NewAuthenticatedCtxMetadata creates a new unauthenticated CtxMetadata
+//
+// Parameters:
+//
+//   - jwtToken: The JWT token to add to the context
+//
+// Returns:
+//
+//   - CtxMetadata: The context metadata
+//   - error: An error if the JWT token is empty or any other error occurs
+func NewAuthenticatedCtxMetadata(jwtToken string) (CtxMetadata, error) {
 	return NewCtxMetadata(
-		&map[string]string{
+		map[string]string{
+			gojwtgrpc.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + jwtToken,
+		},
+	)
+}
+
+// NewGCloudUnauthenticatedCtxMetadata creates a new unauthenticated CtxMetadata for GCloud
+//
+// Parameters:
+//
+//   - gcloudToken: The GCloud token to add to the context
+//
+// Returns:
+//
+//   - CtxMetadata: The context metadata
+//   - error: An error if the GCloud token is empty or any other error occurs
+func NewGCloudUnauthenticatedCtxMetadata(gcloudToken string) (
+	CtxMetadata,
+	error,
+) {
+	return NewCtxMetadata(
+		map[string]string{
 			gogrpcgcloud.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + gcloudToken,
 		},
 	)
 }
 
-// NewAuthenticatedCtxMetadata creates a new authenticated CtxMetadata
-func NewAuthenticatedCtxMetadata(
+// NewGCloudAuthenticatedCtxMetadata creates a new authenticated CtxMetadata for GCloud
+//
+// Parameters:
+//
+//   - gcloudToken: The GCloud token to add to the context
+//   - jwtToken: The JWT token to add to the context
+//
+// Returns:
+//
+//   - CtxMetadata: The context metadata
+func NewGCloudAuthenticatedCtxMetadata(
 	gcloudToken string, jwtToken string,
-) (*CtxMetadata, error) {
+) (CtxMetadata, error) {
 	return NewCtxMetadata(
-		&map[string]string{
+		map[string]string{
 			gogrpcgcloud.AuthorizationMetadataKey: gojwt.BearerPrefix + " " + gcloudToken,
 			gojwtgrpc.AuthorizationMetadataKey:    gojwt.BearerPrefix + " " + jwtToken,
 		},
@@ -66,8 +110,17 @@ func NewAuthenticatedCtxMetadata(
 }
 
 // GetCtxWithMetadata gets the context with the metadata
+//
+// Parameters:
+//
+//   - ctxMetadata: The context metadata to add to the context
+//   - ctx: The context to add the metadata to
+//
+// Returns:
+//
+//   - context.Context: The context with the metadata
 func GetCtxWithMetadata(
-	ctxMetadata *CtxMetadata, ctx context.Context,
+	ctxMetadata CtxMetadata, ctx context.Context,
 ) context.Context {
 	// Check if the context metadata is nil
 	if ctxMetadata == nil {
@@ -78,13 +131,22 @@ func GetCtxWithMetadata(
 	md := metadata.Pairs()
 
 	// Add the metadata to the context
-	for _, field := range ctxMetadata.fields {
+	for _, field := range ctxMetadata {
 		md.Append(field.key, field.value)
 	}
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
 // AppendGCloudTokenToOutgoingContext appends the GCloud token to the outgoing context
+//
+// Parameters:
+//
+//   - ctx: The context to append the GCloud token to
+//   - gcloudToken: The GCloud token to append to the context
+//
+// Returns:
+//
+//   - context.Context: The context with the GCloud token appended
 func AppendGCloudTokenToOutgoingContext(
 	ctx context.Context, gcloudToken string,
 ) context.Context {

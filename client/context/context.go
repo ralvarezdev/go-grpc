@@ -10,6 +10,15 @@ import (
 )
 
 // GetOutgoingCtx returns a context with the raw token
+//
+// Parameters:
+//
+//   - ctx: The context to get the raw token from
+//
+// Returns:
+//
+//   - context.Context: The context with the raw token
+//   - error: An error if the raw token is not found or any other error occurs
 func GetOutgoingCtx(ctx context.Context) (context.Context, error) {
 	// Get the raw token from the context
 	rawToken, err := gojwtgrpcctx.GetCtxRawToken(ctx)

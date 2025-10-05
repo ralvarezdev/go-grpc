@@ -10,6 +10,16 @@ import (
 )
 
 // GetTokenFromMetadata gets the token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the token from
+//   - tokenKey: The key to get the token from the metadata
+//
+// Returns:
+//
+//   - string: The token
+//   - error: An error if the token is not found or any other error occurs
 func GetTokenFromMetadata(md metadata.MD, tokenKey string) (string, error) {
 	// Get the authorization from the metadata
 	authorization := md.Get(tokenKey)
@@ -32,11 +42,29 @@ func GetTokenFromMetadata(md metadata.MD, tokenKey string) (string, error) {
 }
 
 // GetAuthorizationTokenFromMetadata gets the authorization token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the token from
+//
+// Returns:
+//
+//   - string: The token
+//   - error: An error if the token is not found or any other error occurs
 func GetAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
 	return GetTokenFromMetadata(md, gojwtgrpc.AuthorizationMetadataKey)
 }
 
 // GetGCloudAuthorizationTokenFromMetadata gets the GCloud authorization token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the token from
+//
+// Returns:
+//
+//   - string: The token
+//   - error: An error if the token is not found or any other error occurs
 func GetGCloudAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
 	return GetTokenFromMetadata(md, gogrpcgcloud.AuthorizationMetadataKey)
 }

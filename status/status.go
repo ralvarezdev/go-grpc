@@ -10,6 +10,16 @@ import (
 )
 
 // ExtractErrorFromStatus extracts the error from the status
+//
+// Parameters:
+//
+//   - mode: The flag mode to determine if the error should be masked
+//   - err: The error to extract the status from
+//
+// Returns:
+//
+//   - codes.Code: The gRPC status code
+//   - error: The extracted error
 func ExtractErrorFromStatus(mode *goflagsmode.Flag, err error) (
 	codes.Code,
 	error,

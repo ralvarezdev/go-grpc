@@ -18,16 +18,27 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// Interceptor is the interceptor for the authentication
-type Interceptor struct {
-	validator     gojwtvalidator.Validator
-	interceptions *map[string]*gojwttoken.Token
-}
+type (
+	// Interceptor is the interceptor for the authentication
+	Interceptor struct {
+		validator     gojwtvalidator.Validator
+		interceptions map[string]*gojwttoken.Token
+	}
+)
 
 // NewInterceptor creates a new authentication interceptor
+//
+// Parameters:
+//
+//   - validator: the JWT validator to validate the tokens
+//   - interceptions: the gRPC interceptions to determine which methods require authentication
+//
+// Returns:
+//
+//   - *Interceptor: the interceptor
 func NewInterceptor(
 	validator gojwtvalidator.Validator,
-	interceptions *map[string]*gojwttoken.Token,
+	interceptions map[string]*gojwttoken.Token,
 ) (*Interceptor, error) {
 	// Check if either the validator or the gRPC interceptions is nil
 	if validator == nil {
@@ -44,13 +55,17 @@ func NewInterceptor(
 }
 
 // Authenticate returns the authentication interceptor
-func (i *Interceptor) Authenticate() grpc.UnaryServerInterceptor {
+//
+// Returns:
+//
+//   - grpc.UnaryServerInterceptor: the authentication interceptor
+func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
 		// Check if the method should be intercepted
-		interception, ok := (*i.interceptions)[info.FullMethod]
+		interception, ok := i.interceptions[info.FullMethod]
 		if !ok || interception == nil {
 			return handler(ctx, req)
 		}

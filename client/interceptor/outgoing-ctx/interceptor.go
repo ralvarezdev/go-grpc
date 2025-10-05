@@ -2,33 +2,48 @@ package outgoing_ctx
 
 import (
 	"context"
+	"log/slog"
 
-	gologger "github.com/ralvarezdev/go-logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
-// Interceptor is the interceptor for the outgoing context
-type Interceptor struct {
-	logger *Logger
-}
+type (
+	// Interceptor is the interceptor for the outgoing context
+	Interceptor struct {
+		logger *slog.Logger
+	}
+)
 
 // NewInterceptor creates a new interceptor for the outgoing context
-func NewInterceptor(logger *Logger) (*Interceptor, error) {
-	// Check if the logger is nil
-	if logger == nil {
-		return nil, gologger.ErrNilLogger
+//
+// Parameters:
+//
+//   - logger: the logger to use
+//
+// Returns:
+//
+//   - *Interceptor: the interceptor
+func NewInterceptor(logger *slog.Logger) *Interceptor {
+	if logger != nil {
+		logger = logger.With(
+			slog.String("component", "client_interceptor_outgoing_ctx"),
+		)
 	}
 
 	return &Interceptor{
 		logger,
-	}, nil
+	}
 }
 
 // PrintOutgoingCtx prints the outgoing context
-func (i *Interceptor) PrintOutgoingCtx() grpc.UnaryClientInterceptor {
+//
+// Returns:
+//
+//   - grpc.UnaryClientInterceptor: the interceptor
+func (i Interceptor) PrintOutgoingCtx() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
@@ -47,9 +62,16 @@ func (i *Interceptor) PrintOutgoingCtx() grpc.UnaryClientInterceptor {
 		}
 
 		// Print the metadata
-		for key, values := range md {
-			for _, value := range values {
-				i.logger.LogKeyValue(key, value)
+		if i.logger != nil {
+			for key, values := range md {
+				for _, value := range values {
+					i.logger.Debug(
+						"found metadata in outgoing context",
+						slog.String("method", method),
+						slog.String("key", key),
+						slog.String("value", value),
+					)
+				}
 			}
 		}
 

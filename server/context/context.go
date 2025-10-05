@@ -9,6 +9,15 @@ import (
 )
 
 // GetClientIP extracts the client IP address from the context
+//
+// Parameters:
+//
+//   - ctx: The context from which to extract the client IP address
+//
+// Returns:
+//
+//   - string: The client IP address
+//   - error: An error if the IP address could not be extracted
 func GetClientIP(ctx context.Context) (string, error) {
 	p, ok := peer.FromContext(ctx)
 	if !ok {
