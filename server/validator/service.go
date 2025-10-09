@@ -216,7 +216,7 @@ func (d DefaultService) createMapper(
 func (d DefaultService) CreateValidateFn(
 	requestExample interface{},
 	cache bool,
-	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+	auxiliaryValidatorFns ...interface{},
 ) (ValidateFn, error) {
 	// Create the mapper
 	mapper, requestType, err := d.createMapper(requestExample)
@@ -311,7 +311,7 @@ func (d DefaultService) CreateValidateFn(
 //   - error: if there was an error validating the request
 func (d DefaultService) Validate(
 	request interface{},
-	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+	auxiliaryValidatorFns ...interface{},
 ) error {
 	// Create and cache the validate function
 	validateFn, err := d.CreateValidateFn(

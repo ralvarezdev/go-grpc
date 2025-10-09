@@ -34,7 +34,9 @@ github.com/ralvarezdev/go-validator v0.6.4 h1:tA2sxP9w2L3Ok/SRKBUdCzfpJKs88Igmtx
 github.com/ralvarezdev/go-validator v0.6.4/go.mod h1:XQr//SLa6U+3x27QxKFjROUmzfC9VtthuESS7QkVAJA=
 github.com/ralvarezdev/go-validator v0.6.5 h1:+101JqyDMPDZbEPyvDayzqJDUwpigCIoIjAMj4Fv+aM=
 github.com/ralvarezdev/go-validator v0.6.5/go.mod h1:XQr//SLa6U+3x27QxKFjROUmzfC9VtthuESS7QkVAJA=
+github.com/ralvarezdev/go-validator v0.6.6 h1:SWqA72AzKGDfpliEWndflRcySY/LzdWdR5o9dI+UqCQ=
 github.com/ralvarezdev/go-validator v0.6.6/go.mod h1:XQr//SLa6U+3x27QxKFjROUmzfC9VtthuESS7QkVAJA=
+github.com/ralvarezdev/go-validator v0.6.7/go.mod h1:XQr//SLa6U+3x27QxKFjROUmzfC9VtthuESS7QkVAJA=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=

@@ -35,11 +35,11 @@ type (
 		CreateValidateFn(
 			requestExample interface{},
 			cache bool,
-			auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+			auxiliaryValidatorFns ...interface{},
 		) (ValidateFn, error)
 		Validate(
 			request interface{},
-			auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+			auxiliaryValidatorFns ...interface{},
 		) error
 	}
 )
