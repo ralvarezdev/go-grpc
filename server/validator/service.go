@@ -19,13 +19,15 @@ import (
 )
 
 type (
+
 	// DefaultService is the default struct validator service
 	DefaultService struct {
-		generator govalidatorstructmapper.Generator
-		parser    govalidatorstructmapperparser.Parser
-		validator govalidatorstructmappervalidator.Validator
-		service   govalidatorstructmappervalidator.Service
-		logger    *slog.Logger
+		generator        govalidatorstructmapper.Generator
+		parser           govalidatorstructmapperparser.Parser
+		validator        govalidatorstructmappervalidator.Validator
+		service          govalidatorstructmappervalidator.Service
+		cacheValidateFns map[string]ValidateFn
+		logger           *slog.Logger
 	}
 )
 
@@ -62,11 +64,12 @@ func NewService(
 	generator := govalidatorstructmapper.NewProtobufGenerator(logger)
 
 	return &DefaultService{
-		parser:    parser,
-		validator: validator,
-		service:   service,
-		generator: generator,
-		logger:    logger,
+		parser:           parser,
+		validator:        validator,
+		service:          service,
+		generator:        generator,
+		logger:           logger,
+		cacheValidateFns: make(map[string]ValidateFn),
 	}, nil
 }
 
@@ -161,12 +164,12 @@ func (d DefaultService) Password(
 //
 // Returns:
 //
-//   - func(request interface{}) error: the validate function
+//   - ValidateFn: the validate function
 //   - error: if there was an error creating the validate function
 func (d DefaultService) CreateValidateFn(
 	requestExample interface{},
 	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
-) (func(request interface{}) error, error) {
+) (ValidateFn, error) {
 	// Get the type of the request
 	requestType := goreflect.GetTypeOf(requestExample)
 
@@ -221,4 +224,52 @@ func (d DefaultService) CreateValidateFn(
 		// Return error in your gRPC handler
 		return stWithDetails.Err()
 	}, nil
+}
+
+// CreateAndCacheValidateFn creates and caches a validate function for a given request example
+//
+// Parameters:
+//
+//   - requestExample: an example of the request to validate
+//   - auxiliaryValidatorFns: auxiliary validator functions to use in the validation
+//
+// Returns:
+//
+//   - ValidateFn: the validate function
+//   - error: if there was an error creating the validate function
+func (d DefaultService) CreateAndCacheValidateFn(
+	requestExample interface{},
+	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+) (ValidateFn, error) {
+	// Get the type of the request
+	requestType := goreflect.GetTypeOf(requestExample)
+
+	// Dereference the request type if it is a pointer
+	if requestType.Kind() == reflect.Pointer {
+		requestType = requestType.Elem()
+	} else {
+		requestExample = &requestExample
+	}
+
+	// Get the unique string representation of the request type
+	uniqueReference := goreflect.UniqueTypeReference(requestType)
+
+	// Check if the validate function is already cached
+	if validateFn, ok := d.cacheValidateFns[uniqueReference]; ok {
+		return validateFn, nil
+	}
+
+	// Create the validate function
+	validateFn, err := d.CreateValidateFn(
+		requestExample,
+		auxiliaryValidatorFns...,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache the validate function
+	d.cacheValidateFns[uniqueReference] = validateFn
+
+	return validateFn, nil
 }

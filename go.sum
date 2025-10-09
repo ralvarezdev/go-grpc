@@ -87,6 +87,10 @@ github.com/ralvarezdev/go-logger v0.4.7 h1:kqg3lLZml+oBFavDCPA4M4olhwWUAUnfDmU1q
 github.com/ralvarezdev/go-logger v0.4.7/go.mod h1:gOFbSSJ0rWqLtrNpwoOT3Gnim5aXo93lZC0cY0vU/yg=
 github.com/ralvarezdev/go-logger v0.4.9 h1:MwzWamYwN9o6xQj2j49O8c9+4KP9gLnybbHFCzTNTng=
 github.com/ralvarezdev/go-logger v0.4.9/go.mod h1:0DmR5M3NqdirA0e8WDIyBVHo2zCZI+DOEKwGL9ENUVU=
+github.com/ralvarezdev/go-reflect v0.2.7 h1:u0+LnqSWLtrecYw530Giq5H0F3ZQtE3t1M7rEKKy96w=
+github.com/ralvarezdev/go-reflect v0.2.7/go.mod h1:jv3EqQfUixWtNeJd/Rnzf0IDcYZ1z3GApRdAGQHdHZQ=
+github.com/ralvarezdev/go-reflect v0.2.8 h1:6bmnMMxwxKvd2IBWG+BEVYnjUBYQfCNkoCvVos89t1M=
+github.com/ralvarezdev/go-reflect v0.2.8/go.mod h1:jv3EqQfUixWtNeJd/Rnzf0IDcYZ1z3GApRdAGQHdHZQ=
 github.com/ralvarezdev/go-strings v0.1.0 h1:bE4eEkdfsHwpgUw+s8/EdLPkRTPki/FTGZx8iEOOQBQ=
 github.com/ralvarezdev/go-strings v0.1.0/go.mod h1:8sFOqmPJpqzS7bTjf91EzUCITnwpmkfifwY80GxV5r8=
 github.com/ralvarezdev/go-strings v0.1.7/go.mod h1:8sFOqmPJpqzS7bTjf91EzUCITnwpmkfifwY80GxV5r8=
