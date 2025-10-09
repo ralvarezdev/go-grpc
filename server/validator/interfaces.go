@@ -40,5 +40,9 @@ type (
 			requestExample interface{},
 			auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
 		) (ValidateFn, error)
+		Validate(
+			request interface{},
+			auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+		) error
 	}
 )

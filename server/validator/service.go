@@ -63,6 +63,13 @@ func NewService(
 	// Initialize the generator
 	generator := govalidatorstructmapper.NewProtobufGenerator(logger)
 
+	// Create a logger for the service
+	if logger != nil {
+		logger = logger.With(
+			slog.String("component", "validator_service"),
+		)
+	}
+
 	return &DefaultService{
 		parser:           parser,
 		validator:        validator,
@@ -183,6 +190,13 @@ func (d DefaultService) CreateValidateFn(
 	// Create the mapper
 	mapper, err := d.generator.NewMapper(requestExample)
 	if err != nil {
+		if d.logger != nil {
+			d.logger.Error(
+				"Failed to create mapper",
+				slog.String("type", requestType.String()),
+				slog.Any("error", err),
+			)
+		}
 		return nil, err
 	}
 
@@ -192,6 +206,13 @@ func (d DefaultService) CreateValidateFn(
 		auxiliaryValidatorFns...,
 	)
 	if err != nil {
+		if d.logger != nil {
+			d.logger.Error(
+				"Failed to create validate function",
+				slog.String("type", requestType.String()),
+				slog.Any("error", err),
+			)
+		}
 		return nil, err
 	}
 
@@ -201,9 +222,19 @@ func (d DefaultService) CreateValidateFn(
 
 		// Validate the request
 		validations, err := validateFn(dest)
+		if err != nil {
+			if d.logger != nil {
+				d.logger.Error(
+					"Failed to validate request",
+					slog.String("type", requestType.String()),
+					slog.Any("error", err),
+				)
+			}
+			return status.Error(codes.Internal, "Failed to validate request")
+		}
 
 		// Check if the error is nil and there are no validations
-		if err == nil && validations == nil {
+		if validations == nil {
 			return nil
 		}
 
@@ -272,4 +303,31 @@ func (d DefaultService) CreateAndCacheValidateFn(
 	d.cacheValidateFns[uniqueReference] = validateFn
 
 	return validateFn, nil
+}
+
+// Validate is the function that creates (if not cached), caches and executes the validation
+//
+// Parameters:
+//
+//   - request: the request to validate
+//   - auxiliaryValidatorFns: auxiliary validator functions to use in the validation
+//
+// Returns:
+//
+//   - error: if there was an error validating the request
+func (d DefaultService) Validate(
+	request interface{},
+	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
+) error {
+	// Create and cache the validate function
+	validateFn, err := d.CreateAndCacheValidateFn(
+		request,
+		auxiliaryValidatorFns...,
+	)
+	if err != nil {
+		return status.Error(codes.Internal, "Failed to validate request")
+	}
+
+	// Execute the validate function
+	return validateFn(request)
 }
