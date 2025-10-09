@@ -263,7 +263,7 @@ func (d DefaultService) CreateValidateFn(
 					slog.Any("error", err),
 				)
 			}
-			return status.Error(codes.Internal, "Failed to validate request")
+			return status.Error(codes.Internal, "failed to validate request")
 		}
 
 		// Check if the error is nil and there are no validations
@@ -282,7 +282,7 @@ func (d DefaultService) CreateValidateFn(
 		anyValue, _ := anypb.New(&stringValue)
 
 		// Create status with details
-		st := status.New(codes.InvalidArgument, "Validation failed")
+		st := status.New(codes.InvalidArgument, "validation failed")
 		stWithDetails, _ := st.WithDetails(anyValue)
 
 		// Return error in your gRPC handler
@@ -320,7 +320,7 @@ func (d DefaultService) Validate(
 		auxiliaryValidatorFns...,
 	)
 	if err != nil {
-		return status.Error(codes.Internal, "Failed to validate request")
+		return status.Error(codes.Internal, "failed to validate request")
 	}
 
 	// Execute the validate function
