@@ -22,12 +22,12 @@ type (
 
 	// DefaultService is the default struct validator service
 	DefaultService struct {
-		generator        govalidatorstructmapper.Generator
-		parser           govalidatorstructmapperparser.Parser
-		validator        govalidatorstructmappervalidator.Validator
-		service          govalidatorstructmappervalidator.Service
-		cacheValidateFns map[string]ValidateFn
-		logger           *slog.Logger
+		generator   govalidatorstructmapper.Generator
+		parser      govalidatorstructmapperparser.Parser
+		validator   govalidatorstructmappervalidator.Validator
+		service     govalidatorstructmappervalidator.Service
+		validateFns map[string]ValidateFn
+		logger      *slog.Logger
 	}
 )
 
@@ -55,6 +55,7 @@ func NewService(
 	service, err := govalidatorstructmappervalidator.NewDefaultService(
 		parser,
 		validator,
+		logger,
 	)
 	if err != nil {
 		return nil, err
@@ -66,17 +67,17 @@ func NewService(
 	// Create a logger for the service
 	if logger != nil {
 		logger = logger.With(
-			slog.String("component", "validator_service"),
+			slog.String("component", "grpc_validator_service"),
 		)
 	}
 
 	return &DefaultService{
-		parser:           parser,
-		validator:        validator,
-		service:          service,
-		generator:        generator,
-		logger:           logger,
-		cacheValidateFns: make(map[string]ValidateFn),
+		parser:      parser,
+		validator:   validator,
+		service:     service,
+		generator:   generator,
+		logger:      logger,
+		validateFns: make(map[string]ValidateFn),
 	}, nil
 }
 
@@ -162,11 +163,50 @@ func (d DefaultService) Password(
 	)
 }
 
+// createMapper creates a mapper for a given struct
+//
+// Parameters:
+//
+//   - structInstance: the struct instance to create the mapper for
+//
+// Returns:
+//
+//   - *govalidatormapper.Mapper: the mapper
+//   - error: if there was an error creating the mapper
+func (d DefaultService) createMapper(
+	structInstance interface{},
+) (*govalidatorstructmapper.Mapper, reflect.Type, error) {
+	// Get the type of the request
+	structInstanceType := goreflect.GetTypeOf(structInstance)
+
+	// Dereference the request type if it is a pointer
+	if structInstanceType.Kind() == reflect.Pointer {
+		structInstanceType = structInstanceType.Elem()
+	} else {
+		structInstance = &structInstance
+	}
+
+	// Create the mapper
+	mapper, err := d.generator.NewMapper(structInstance)
+	if err != nil {
+		if d.logger != nil {
+			d.logger.Error(
+				"Failed to create mapper",
+				slog.String("type", structInstanceType.String()),
+				slog.Any("error", err),
+			)
+		}
+		return nil, structInstanceType, err
+	}
+	return mapper, structInstanceType, nil
+}
+
 // CreateValidateFn creates a validate function for a given request example
 //
 // Parameters:
 //
 //   - requestExample: an example of the request to validate
+//   - cache: whether to cache the validate function or not
 //   - auxiliaryValidatorFns: auxiliary validator functions to use in the validation
 //
 // Returns:
@@ -175,34 +215,26 @@ func (d DefaultService) Password(
 //   - error: if there was an error creating the validate function
 func (d DefaultService) CreateValidateFn(
 	requestExample interface{},
+	cache bool,
 	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
 ) (ValidateFn, error) {
-	// Get the type of the request
-	requestType := goreflect.GetTypeOf(requestExample)
-
-	// Dereference the request type if it is a pointer
-	if requestType.Kind() == reflect.Pointer {
-		requestType = requestType.Elem()
-	} else {
-		requestExample = &requestExample
-	}
-
 	// Create the mapper
-	mapper, err := d.generator.NewMapper(requestExample)
+	mapper, requestType, err := d.createMapper(requestExample)
 	if err != nil {
-		if d.logger != nil {
-			d.logger.Error(
-				"Failed to create mapper",
-				slog.String("type", requestType.String()),
-				slog.Any("error", err),
-			)
-		}
 		return nil, err
 	}
 
-	// Create the validate function
-	validateFn, err := d.service.CreateValidateFn(
+	// Check if the validate function is already cached
+	if cache && d.validateFns != nil {
+		if validateFn, ok := d.validateFns[goreflect.UniqueTypeReference(mapper.GetStructInstance())]; ok {
+			return validateFn, nil
+		}
+	}
+
+	// Create the inner validate function
+	innerValidateFn, err := d.service.CreateValidateFn(
 		mapper,
+		cache,
 		auxiliaryValidatorFns...,
 	)
 	if err != nil {
@@ -216,12 +248,13 @@ func (d DefaultService) CreateValidateFn(
 		return nil, err
 	}
 
-	return func(request interface{}) error {
+	// Create the wrapped validate function
+	validateFn := func(request interface{}) error {
 		// Get a new instance of the body
 		dest := goreflect.NewInstanceFromType(requestType)
 
 		// Validate the request
-		validations, err := validateFn(dest)
+		validations, err := innerValidateFn(dest)
 		if err != nil {
 			if d.logger != nil {
 				d.logger.Error(
@@ -254,54 +287,15 @@ func (d DefaultService) CreateValidateFn(
 
 		// Return error in your gRPC handler
 		return stWithDetails.Err()
-	}, nil
-}
-
-// CreateAndCacheValidateFn creates and caches a validate function for a given request example
-//
-// Parameters:
-//
-//   - requestExample: an example of the request to validate
-//   - auxiliaryValidatorFns: auxiliary validator functions to use in the validation
-//
-// Returns:
-//
-//   - ValidateFn: the validate function
-//   - error: if there was an error creating the validate function
-func (d DefaultService) CreateAndCacheValidateFn(
-	requestExample interface{},
-	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
-) (ValidateFn, error) {
-	// Get the type of the request
-	requestType := goreflect.GetTypeOf(requestExample)
-
-	// Dereference the request type if it is a pointer
-	if requestType.Kind() == reflect.Pointer {
-		requestType = requestType.Elem()
-	} else {
-		requestExample = &requestExample
-	}
-
-	// Get the unique string representation of the request type
-	uniqueReference := goreflect.UniqueTypeReference(requestType)
-
-	// Check if the validate function is already cached
-	if validateFn, ok := d.cacheValidateFns[uniqueReference]; ok {
-		return validateFn, nil
-	}
-
-	// Create the validate function
-	validateFn, err := d.CreateValidateFn(
-		requestExample,
-		auxiliaryValidatorFns...,
-	)
-	if err != nil {
-		return nil, err
 	}
 
 	// Cache the validate function
-	d.cacheValidateFns[uniqueReference] = validateFn
-
+	if cache {
+		if d.validateFns == nil {
+			d.validateFns = make(map[string]ValidateFn)
+		}
+		d.validateFns[goreflect.UniqueTypeReference(mapper.GetStructInstance())] = validateFn
+	}
 	return validateFn, nil
 }
 
@@ -320,8 +314,9 @@ func (d DefaultService) Validate(
 	auxiliaryValidatorFns ...govalidatorstructmappervalidator.AuxiliaryValidatorFn,
 ) error {
 	// Create and cache the validate function
-	validateFn, err := d.CreateAndCacheValidateFn(
+	validateFn, err := d.CreateValidateFn(
 		request,
+		true,
 		auxiliaryValidatorFns...,
 	)
 	if err != nil {
