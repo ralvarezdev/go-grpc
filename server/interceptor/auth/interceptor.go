@@ -36,6 +36,7 @@ type (
 // Returns:
 //
 //   - *Interceptor: the interceptor
+//   - error: if there was an error creating the interceptor
 func NewInterceptor(
 	validator gojwtvalidator.Validator,
 	interceptions map[string]*gojwttoken.Token,
