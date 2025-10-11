@@ -8,7 +8,7 @@ import (
 	gogrpcserver "github.com/ralvarezdev/go-grpc/server"
 	gogrpcservermd "github.com/ralvarezdev/go-grpc/server/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
-	gojwtgrpcmd "github.com/ralvarezdev/go-jwt/grpc/context"
+	gojwtgrpcctx "github.com/ralvarezdev/go-jwt/grpc/context"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	gojwtvalidator "github.com/ralvarezdev/go-jwt/token/validator"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -81,7 +81,7 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Get the raw token from the metadata
-		rawToken, err := gogrpcservermd.GetAuthorizationTokenFromMetadata(md)
+		rawToken, err := gogrpcservermd.GetMetadataAuthorizationToken(md)
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
@@ -104,8 +104,13 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Set the raw token and token claims to the context
-		ctx = gojwtgrpcmd.SetCtxRawToken(ctx, rawToken)
-		ctx = gojwtgrpcmd.SetCtxTokenClaims(ctx, claims)
+		if *interception == gojwttoken.AccessToken {
+			ctx = gojwtgrpcctx.SetCtxAccessToken(ctx, rawToken)
+			ctx = gojwtgrpcctx.SetCtxAccessTokenClaims(ctx, claims)
+		} else if *interception == gojwttoken.RefreshToken {
+			ctx = gojwtgrpcctx.SetCtxRefreshToken(ctx, rawToken)
+			ctx = gojwtgrpcctx.SetCtxRefreshTokenClaims(ctx, claims)
+		}
 
 		return handler(ctx, req)
 	}

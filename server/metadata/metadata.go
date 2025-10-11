@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// GetValueFromMetadata gets the value for a given key from the metadata
+// GetMetadataValue gets the value for a given key from the metadata
 //
 // Parameters:
 //
@@ -20,7 +20,7 @@ import (
 //
 //   - []string: The value for the given key
 //   - error: An error if the key is not found or any other error occurs
-func GetValueFromMetadata(md metadata.MD, key string) ([]string, error) {
+func GetMetadataValue(md metadata.MD, key string) ([]string, error) {
 	// Get the value from the metadata
 	value := md.Get(key)
 	if value == nil {
@@ -29,7 +29,7 @@ func GetValueFromMetadata(md metadata.MD, key string) ([]string, error) {
 	return value, nil
 }
 
-// GetTokenFromMetadata gets the token from the metadata for a given key
+// GetMetadataBearerToken gets the bearer token from the metadata
 //
 // Parameters:
 //
@@ -40,9 +40,9 @@ func GetValueFromMetadata(md metadata.MD, key string) ([]string, error) {
 //
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
-func GetTokenFromMetadata(md metadata.MD, key string) (string, error) {
+func GetMetadataBearerToken(md metadata.MD, key string) (string, error) {
 	// Get the value from the metadata
-	value, err := GetValueFromMetadata(md, key)
+	value, err := GetMetadataValue(md, key)
 	if err != nil {
 		return "", err
 	}
@@ -66,7 +66,7 @@ func GetTokenFromMetadata(md metadata.MD, key string) (string, error) {
 	return authorizationFields[1], nil
 }
 
-// GetAuthorizationTokenFromMetadata gets the authorization token from the metadata
+// GetMetadataAuthorizationToken gets the authorization token from the metadata
 //
 // Parameters:
 //
@@ -76,11 +76,11 @@ func GetTokenFromMetadata(md metadata.MD, key string) (string, error) {
 //
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
-func GetAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
-	return GetTokenFromMetadata(md, gojwtgrpc.AuthorizationMetadataKey)
+func GetMetadataAuthorizationToken(md metadata.MD) (string, error) {
+	return GetMetadataBearerToken(md, AuthorizationKey)
 }
 
-// GetGCloudAuthorizationTokenFromMetadata gets the GCloud authorization token from the metadata
+// GetMetadataGCloudAuthorizationToken gets the GCloud authorization token from the metadata
 //
 // Parameters:
 //
@@ -90,6 +90,78 @@ func GetAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
 //
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
-func GetGCloudAuthorizationTokenFromMetadata(md metadata.MD) (string, error) {
-	return GetTokenFromMetadata(md, gogrpcgcloud.AuthorizationMetadataKey)
+func GetMetadataGCloudAuthorizationToken(md metadata.MD) (string, error) {
+	return GetMetadataBearerToken(md, gogrpcgcloud.AuthorizationMetadataKey)
+}
+
+// GetMetadataRefreshToken gets the refresh token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the token from
+//
+// Returns:
+//
+//   - string: The token
+//   - error: An error if the token is not found or any other error occurs
+func GetMetadataRefreshToken(md metadata.MD) (string, error) {
+	value, err := GetMetadataValue(md, RefreshTokenKey)
+	if err != nil {
+		return "", err
+	}
+	if len(value) == 0 {
+		return "", ErrNilMetadataKeyValue
+	}
+	return value[0], nil
+}
+
+// GetMetadataAccessToken gets the access token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the token from
+//
+// Returns:
+//
+//   - string: The token
+//   - error: An error if the token is not found or any other error occurs
+func GetMetadataAccessToken(md metadata.MD) (string, error) {
+	value, err := GetMetadataValue(md, AccessTokenKey)
+	if err != nil {
+		return "", err
+	}
+	if len(value) == 0 {
+		return "", ErrNilMetadataKeyValue
+	}
+	return value[0], nil
+}
+
+// SetMetadataRefreshToken sets the refresh token to the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to set the token to
+//   - refreshToken: The token to set
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token set
+func SetMetadataRefreshToken(md metadata.MD, refreshToken string) metadata.MD {
+	md.Set(RefreshTokenKey, refreshToken)
+	return md
+}
+
+// SetMetadataAccessToken sets the access token to the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to set the token to
+//   - accessToken: The token to set
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token set
+func SetMetadataAccessToken(md metadata.MD, accessToken string) metadata.MD {
+	md.Set(AccessTokenKey, accessToken)
+	return md
 }

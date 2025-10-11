@@ -3,8 +3,8 @@ package validator
 import (
 	"time"
 
-	"github.com/ralvarezdev/go-validator/struct/mapper/validation"
-	govalidatorstructmappervalidator "github.com/ralvarezdev/go-validator/struct/mapper/validator"
+	"github.com/ralvarezdev/go-validator/mapper/validation"
+	govalidatorstructmappervalidator "github.com/ralvarezdev/go-validator/mapper/validator"
 )
 
 type (

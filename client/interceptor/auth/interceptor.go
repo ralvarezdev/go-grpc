@@ -96,14 +96,16 @@ func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 		cc *grpc.ClientConn,
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,
-	) (err error) {
+	) error {
 		// Check if the method should be intercepted
-		var ctxMetadata gogrpcclientmd.CtxMetadata
 		interception, ok := i.interceptions[method]
 		if !ok || interception == nil {
 			// Create the unauthenticated context metadata if the access token is not nil
 			if i.GCloudAccessToken != nil {
-				ctxMetadata, err = gogrpcclientmd.NewGCloudUnauthenticatedCtxMetadata(*i.GCloudAccessToken)
+				ctx = gogrpcclientmd.SetCtxGCloudAuthorization(
+					ctx,
+					*i.GCloudAccessToken,
+				)
 			}
 		} else {
 			// Get metadata from the context
@@ -116,29 +118,20 @@ func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 			}
 
 			// Get the raw token from the metadata
-			rawToken, err := gogrpcservermd.GetAuthorizationTokenFromMetadata(md)
+			rawToken, err := gogrpcservermd.GetMetadataAuthorizationToken(md)
 			if err != nil {
 				return status.Error(codes.Unauthenticated, err.Error())
 			}
 
 			// Create the authenticated context metadata
+			ctx = gogrpcclientmd.SetCtxAuthorization(ctx, rawToken)
 			if i.GCloudAccessToken == nil {
-				ctxMetadata, err = gogrpcclientmd.NewAuthenticatedCtxMetadata(rawToken)
-			} else {
-				ctxMetadata, err = gogrpcclientmd.NewGCloudAuthenticatedCtxMetadata(
+				ctx = gogrpcclientmd.SetCtxGCloudAuthorization(
+					ctx,
 					*i.GCloudAccessToken,
-					rawToken,
 				)
 			}
 		}
-
-		// Check if there was an error
-		if err != nil {
-			return status.Error(codes.Aborted, err.Error())
-		}
-
-		// Get the gRPC client context with the metadata
-		ctx = gogrpcclientmd.GetCtxWithMetadata(ctxMetadata, ctx)
 
 		// Invoke the original invoker
 		return invoker(ctx, method, req, reply, cc, opts...)

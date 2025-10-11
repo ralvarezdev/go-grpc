@@ -26,6 +26,8 @@ github.com/ralvarezdev/go-flags v0.3.8 h1:b/doNRr2HsniEpz8NjbH2vxJH5WMeymIx0LAzD
 github.com/ralvarezdev/go-flags v0.3.8/go.mod h1:R3yVBYvzwqfOp26LidaiJ/zftVAnPC3pKunVpV/vosE=
 github.com/ralvarezdev/go-jwt v0.5.1 h1:Zyx3YPLSu+qTbl0BoGouU61JjiEKUyVBmkDA71TpyU0=
 github.com/ralvarezdev/go-jwt v0.5.1/go.mod h1:7FVJv+0SNmBegRKzLisTpNd/EWAkgQgmkuBP0dcqQk8=
+github.com/ralvarezdev/go-jwt v0.5.3 h1:jEa0Iy/5EE2DyS1kATiidBYiGnF9YbF1p1S7HDjkgoQ=
+github.com/ralvarezdev/go-jwt v0.5.3/go.mod h1:7FVJv+0SNmBegRKzLisTpNd/EWAkgQgmkuBP0dcqQk8=
 github.com/ralvarezdev/go-reflect v0.2.8 h1:6bmnMMxwxKvd2IBWG+BEVYnjUBYQfCNkoCvVos89t1M=
 github.com/ralvarezdev/go-reflect v0.2.8/go.mod h1:jv3EqQfUixWtNeJd/Rnzf0IDcYZ1z3GApRdAGQHdHZQ=
 github.com/ralvarezdev/go-strings v0.1.15 h1:K+YnBiokOPNRvtVo7f2u0SyCjAILDVAqkRd2rgnBj4U=
@@ -42,6 +44,7 @@ github.com/ralvarezdev/go-validator v0.6.7/go.mod h1:XQr//SLa6U+3x27QxKFjROUmzfC
 github.com/ralvarezdev/go-validator v0.6.9/go.mod h1:+U8prWUDEUGOxNTWvMp+lpyI3HCooKVyS13M/y14Hl8=
 github.com/ralvarezdev/go-validator v0.6.10 h1:dUO/OTMnAH3EkDGjA4smBDge97P2EwE9vl72I2aZGUQ=
 github.com/ralvarezdev/go-validator v0.6.10/go.mod h1:+U8prWUDEUGOxNTWvMp+lpyI3HCooKVyS13M/y14Hl8=
+github.com/ralvarezdev/go-validator v0.6.11 h1:Ge9eHEg0AxUlf/9KmGWQkX66NHZDozBrD7L1viImqek=
 github.com/ralvarezdev/go-validator v0.6.11/go.mod h1:+U8prWUDEUGOxNTWvMp+lpyI3HCooKVyS13M/y14Hl8=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
