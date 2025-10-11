@@ -28,6 +28,8 @@ github.com/ralvarezdev/go-jwt v0.5.1 h1:Zyx3YPLSu+qTbl0BoGouU61JjiEKUyVBmkDA71Tp
 github.com/ralvarezdev/go-jwt v0.5.1/go.mod h1:7FVJv+0SNmBegRKzLisTpNd/EWAkgQgmkuBP0dcqQk8=
 github.com/ralvarezdev/go-jwt v0.5.3 h1:jEa0Iy/5EE2DyS1kATiidBYiGnF9YbF1p1S7HDjkgoQ=
 github.com/ralvarezdev/go-jwt v0.5.3/go.mod h1:7FVJv+0SNmBegRKzLisTpNd/EWAkgQgmkuBP0dcqQk8=
+github.com/ralvarezdev/go-jwt v0.5.4 h1:IvLWvQRL6+PJJ0kHetvqV68I0Wowc7gPsVyeVApFJkk=
+github.com/ralvarezdev/go-jwt v0.5.4/go.mod h1:7FVJv+0SNmBegRKzLisTpNd/EWAkgQgmkuBP0dcqQk8=
 github.com/ralvarezdev/go-reflect v0.2.8 h1:6bmnMMxwxKvd2IBWG+BEVYnjUBYQfCNkoCvVos89t1M=
 github.com/ralvarezdev/go-reflect v0.2.8/go.mod h1:jv3EqQfUixWtNeJd/Rnzf0IDcYZ1z3GApRdAGQHdHZQ=
 github.com/ralvarezdev/go-strings v0.1.15 h1:K+YnBiokOPNRvtVo7f2u0SyCjAILDVAqkRd2rgnBj4U=

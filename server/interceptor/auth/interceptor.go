@@ -104,13 +104,8 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Set the raw token and token claims to the context
-		if *interception == gojwttoken.AccessToken {
-			ctx = gojwtgrpcctx.SetCtxAccessToken(ctx, rawToken)
-			ctx = gojwtgrpcctx.SetCtxAccessTokenClaims(ctx, claims)
-		} else if *interception == gojwttoken.RefreshToken {
-			ctx = gojwtgrpcctx.SetCtxRefreshToken(ctx, rawToken)
-			ctx = gojwtgrpcctx.SetCtxRefreshTokenClaims(ctx, claims)
-		}
+		ctx = gojwtgrpcctx.SetCtxToken(ctx, rawToken)
+		ctx = gojwtgrpcctx.SetCtxTokenClaims(ctx, claims)
 
 		return handler(ctx, req)
 	}
