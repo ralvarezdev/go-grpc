@@ -9,26 +9,51 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-// GetTokenFromMetadata gets the token from the metadata
+// GetValueFromMetadata gets the value for a given key from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the value from
+//   - key: The key to get the value for
+//
+// Returns:
+//
+//   - []string: The value for the given key
+//   - error: An error if the key is not found or any other error occurs
+func GetValueFromMetadata(md metadata.MD, key string) ([]string, error) {
+	// Get the value from the metadata
+	value := md.Get(key)
+	if value == nil {
+		return nil, ErrNilMetadataKeyValue
+	}
+	return value, nil
+}
+
+// GetTokenFromMetadata gets the token from the metadata for a given key
 //
 // Parameters:
 //
 //   - md: The metadata to get the token from
-//   - tokenKey: The key to get the token from the metadata
+//   - key: The key to get the token for
 //
 // Returns:
 //
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
-func GetTokenFromMetadata(md metadata.MD, tokenKey string) (string, error) {
-	// Get the authorization from the metadata
-	authorization := md.Get(tokenKey)
-	if len(authorization) <= gojwtgrpc.AuthorizationTokenIdx {
+func GetTokenFromMetadata(md metadata.MD, key string) (string, error) {
+	// Get the value from the metadata
+	value, err := GetValueFromMetadata(md, key)
+	if err != nil {
+		return "", err
+	}
+
+	// Check if the authorization value is valid
+	if len(value) <= gojwtgrpc.AuthorizationTokenIdx {
 		return "", gojwtgrpc.ErrAuthorizationMetadataNotProvided
 	}
 
 	// Get the authorization value from the metadata
-	authorizationValue := authorization[gojwtgrpc.AuthorizationTokenIdx]
+	authorizationValue := value[gojwtgrpc.AuthorizationTokenIdx]
 
 	// Split the authorization value by space
 	authorizationFields := strings.Split(authorizationValue, " ")
