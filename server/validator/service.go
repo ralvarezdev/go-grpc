@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"encoding/json"
 	"log/slog"
 	"reflect"
 	"time"
@@ -9,13 +8,12 @@ import (
 	goreflect "github.com/ralvarezdev/go-reflect"
 	govalidatorstructmapper "github.com/ralvarezdev/go-validator/struct/mapper"
 	govalidatorstructmapperparser "github.com/ralvarezdev/go-validator/struct/mapper/parser"
-	govalidatorstructmapperparserjson "github.com/ralvarezdev/go-validator/struct/mapper/parser/json"
+	govalidatorstructmapperparsergrpc "github.com/ralvarezdev/go-validator/struct/mapper/parser/grpc"
 	govalidatorstructmappervalidation "github.com/ralvarezdev/go-validator/struct/mapper/validation"
 	govalidatorstructmappervalidator "github.com/ralvarezdev/go-validator/struct/mapper/validator"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/anypb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type (
@@ -23,8 +21,6 @@ type (
 	// DefaultService is the default struct validator service
 	DefaultService struct {
 		generator   govalidatorstructmapper.Generator
-		parser      govalidatorstructmapperparser.Parser
-		validator   govalidatorstructmappervalidator.Validator
 		service     govalidatorstructmappervalidator.Service
 		validateFns map[string]ValidateFn
 		logger      *slog.Logger
@@ -45,15 +41,19 @@ type (
 func NewService(
 	logger *slog.Logger,
 ) (*DefaultService, error) {
-	// Initialize the parser
-	parser := govalidatorstructmapperparserjson.NewParser(logger)
+	// Initialize the raw parser
+	rawParser := govalidatorstructmapperparser.NewDefaultRawParser(logger)
+
+	// Initialize the end parser
+	endParser := govalidatorstructmapperparsergrpc.NewDefaultEndParser()
 
 	// Initialize the validator
 	validator := govalidatorstructmappervalidator.NewDefaultValidator(logger)
 
 	// Initialize the service
 	service, err := govalidatorstructmappervalidator.NewDefaultService(
-		parser,
+		rawParser,
+		endParser,
 		validator,
 		logger,
 	)
@@ -72,8 +72,6 @@ func NewService(
 	}
 
 	return &DefaultService{
-		parser:      parser,
-		validator:   validator,
 		service:     service,
 		generator:   generator,
 		logger:      logger,
@@ -271,19 +269,22 @@ func (d DefaultService) CreateValidateFn(
 			return nil
 		}
 
-		// Marshal to JSON
-		jsonBytes, _ := json.Marshal(validations)
-		jsonString := string(jsonBytes)
-
-		// Wrap JSON string in StringValue
-		stringValue := wrapperspb.StringValue{Value: jsonString}
-
-		// Marshal to Any
-		anyValue, _ := anypb.New(&stringValue)
+		// Assert validations to BadRequest
+		errorDetails, ok := validations.(*errdetails.BadRequest)
+		if !ok {
+			if d.logger != nil {
+				d.logger.Error(
+					"Failed to assert validations to BadRequest",
+					slog.String("type", requestType.String()),
+					slog.Any("validations", validations),
+				)
+			}
+			return status.Error(codes.Internal, "failed to validate request")
+		}
 
 		// Create status with details
 		st := status.New(codes.InvalidArgument, "validation failed")
-		stWithDetails, _ := st.WithDetails(anyValue)
+		stWithDetails, _ := st.WithDetails(errorDetails)
 
 		// Return error in your gRPC handler
 		return stWithDetails.Err()
