@@ -6,11 +6,11 @@ import (
 	"time"
 
 	goreflect "github.com/ralvarezdev/go-reflect"
-	govalidatorstructmapper "github.com/ralvarezdev/go-validator/struct/mapper"
-	govalidatorstructmapperparser "github.com/ralvarezdev/go-validator/struct/mapper/parser"
-	govalidatorstructmapperparsergrpc "github.com/ralvarezdev/go-validator/struct/mapper/parser/grpc"
-	govalidatorstructmappervalidation "github.com/ralvarezdev/go-validator/struct/mapper/validation"
-	govalidatorstructmappervalidator "github.com/ralvarezdev/go-validator/struct/mapper/validator"
+	govalidatormapper "github.com/ralvarezdev/go-validator/mapper"
+	govalidatormapperparser "github.com/ralvarezdev/go-validator/mapper/parser"
+	govalidatormapperparsergrpc "github.com/ralvarezdev/go-validator/mapper/parser/grpc"
+	govalidatormappervalidation "github.com/ralvarezdev/go-validator/mapper/validation"
+	govalidatormappervalidator "github.com/ralvarezdev/go-validator/mapper/validator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,8 +20,8 @@ type (
 
 	// DefaultService is the default struct validator service
 	DefaultService struct {
-		generator   govalidatorstructmapper.Generator
-		service     govalidatorstructmappervalidator.Service
+		generator   govalidatormapper.Generator
+		service     govalidatormappervalidator.Service
 		validateFns map[string]ValidateFn
 		logger      *slog.Logger
 	}
@@ -42,16 +42,16 @@ func NewService(
 	logger *slog.Logger,
 ) (*DefaultService, error) {
 	// Initialize the raw parser
-	rawParser := govalidatorstructmapperparser.NewDefaultRawParser(logger)
+	rawParser := govalidatormapperparser.NewDefaultRawParser(logger)
 
 	// Initialize the end parser
-	endParser := govalidatorstructmapperparsergrpc.NewDefaultEndParser()
+	endParser := govalidatormapperparsergrpc.NewDefaultEndParser()
 
 	// Initialize the validator
-	validator := govalidatorstructmappervalidator.NewDefaultValidator(logger)
+	validator := govalidatormappervalidator.NewDefaultValidator(logger)
 
 	// Initialize the service
-	service, err := govalidatorstructmappervalidator.NewDefaultService(
+	service, err := govalidatormappervalidator.NewDefaultService(
 		rawParser,
 		endParser,
 		validator,
@@ -62,7 +62,7 @@ func NewService(
 	}
 
 	// Initialize the generator
-	generator := govalidatorstructmapper.NewProtobufGenerator(logger)
+	generator := govalidatormapper.NewProtobufGenerator(logger)
 
 	// Create a logger for the service
 	if logger != nil {
@@ -89,7 +89,7 @@ func NewService(
 func (d DefaultService) Email(
 	emailField string,
 	email string,
-	validations *govalidatorstructmappervalidation.StructValidations,
+	validations *govalidatormappervalidation.StructValidations,
 ) {
 	d.service.Email(
 		emailField,
@@ -108,7 +108,7 @@ func (d DefaultService) Email(
 func (d DefaultService) Username(
 	usernameField string,
 	username string,
-	validations *govalidatorstructmappervalidation.StructValidations,
+	validations *govalidatormappervalidation.StructValidations,
 ) {
 	d.service.Username(
 		usernameField,
@@ -128,8 +128,8 @@ func (d DefaultService) Username(
 func (d DefaultService) Birthdate(
 	birthdateField string,
 	birthdate time.Time,
-	options *govalidatorstructmappervalidator.BirthdateOptions,
-	validations *govalidatorstructmappervalidation.StructValidations,
+	options *govalidatormappervalidator.BirthdateOptions,
+	validations *govalidatormappervalidation.StructValidations,
 ) {
 	d.service.Birthdate(
 		birthdateField,
@@ -150,8 +150,8 @@ func (d DefaultService) Birthdate(
 func (d DefaultService) Password(
 	passwordField string,
 	password string,
-	options *govalidatorstructmappervalidator.PasswordOptions,
-	validations *govalidatorstructmappervalidation.StructValidations,
+	options *govalidatormappervalidator.PasswordOptions,
+	validations *govalidatormappervalidation.StructValidations,
 ) {
 	d.service.Password(
 		passwordField,
@@ -173,7 +173,7 @@ func (d DefaultService) Password(
 //   - error: if there was an error creating the mapper
 func (d DefaultService) createMapper(
 	structInstance interface{},
-) (*govalidatorstructmapper.Mapper, reflect.Type, error) {
+) (*govalidatormapper.Mapper, reflect.Type, error) {
 	// Get the type of the request
 	structInstanceType := goreflect.GetTypeOf(structInstance)
 
