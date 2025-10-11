@@ -94,6 +94,34 @@ func GetMetadataGCloudAuthorizationToken(md metadata.MD) (string, error) {
 	return GetMetadataBearerToken(md, gogrpcgcloud.AuthorizationMetadataKey)
 }
 
+// ClearMetadataAuthorizationToken clears the authorization token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to clear the token from
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token cleared
+func ClearMetadataAuthorizationToken(md metadata.MD) metadata.MD {
+	md.Delete(AuthorizationKey)
+	return md
+}
+
+// ClearMetadataGCloudAuthorizationToken clears the GCloud authorization token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to clear the token from
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token cleared
+func ClearMetadataGCloudAuthorizationToken(md metadata.MD) metadata.MD {
+	md.Delete(gogrpcgcloud.AuthorizationMetadataKey)
+	return md
+}
+
 // GetMetadataRefreshToken gets the refresh token from the metadata
 //
 // Parameters:
