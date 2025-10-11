@@ -270,7 +270,7 @@ func (d DefaultService) CreateValidateFn(
 		}
 
 		// Assert validations to BadRequest
-		errorDetails, ok := validations.(*errdetails.BadRequest)
+		badRequest, ok := validations.(*errdetails.BadRequest)
 		if !ok {
 			if d.logger != nil {
 				d.logger.Error(
@@ -284,7 +284,7 @@ func (d DefaultService) CreateValidateFn(
 
 		// Create status with details
 		st := status.New(codes.InvalidArgument, "validation failed")
-		stWithDetails, _ := st.WithDetails(errorDetails)
+		stWithDetails, _ := st.WithDetails(badRequest)
 
 		// Return error in your gRPC handler
 		return stWithDetails.Err()
