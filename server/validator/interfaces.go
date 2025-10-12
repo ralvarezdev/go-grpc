@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/ralvarezdev/go-validator/mapper/validation"
-	govalidatorstructmappervalidator "github.com/ralvarezdev/go-validator/mapper/validator"
 )
 
 type (
@@ -23,13 +22,11 @@ type (
 		Birthdate(
 			birthdateField string,
 			birthdate time.Time,
-			options *govalidatorstructmappervalidator.BirthdateOptions,
 			validations *validation.StructValidations,
 		)
 		Password(
 			passwordField string,
 			password string,
-			options *govalidatorstructmappervalidator.PasswordOptions,
 			validations *validation.StructValidations,
 		)
 		CreateValidateFn(

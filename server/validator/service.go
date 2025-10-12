@@ -20,10 +20,12 @@ type (
 
 	// DefaultService is the default struct validator service
 	DefaultService struct {
-		generator   govalidatormapper.Generator
-		service     govalidatormappervalidator.Service
-		validateFns map[string]ValidateFn
-		logger      *slog.Logger
+		generator        govalidatormapper.Generator
+		service          govalidatormappervalidator.Service
+		validateFns      map[string]ValidateFn
+		birthdateOptions *govalidatormappervalidator.BirthdateOptions
+		passwordOptions  *govalidatormappervalidator.PasswordOptions
+		logger           *slog.Logger
 	}
 )
 
@@ -31,7 +33,8 @@ type (
 //
 // Parameters:
 //
-//   - service: the validator service
+//   - birthdateOptions: the default birthdate options (optional, can be nil)
+//   - passwordOptions: the default password options (optional, can be nil)
 //   - logger: the logger
 //
 // Returns:
@@ -39,6 +42,8 @@ type (
 //   - *Validator: the validator
 //   - error: if there was an error creating the validator service
 func NewService(
+	birthdateOptions *govalidatormappervalidator.BirthdateOptions,
+	passwordOptions *govalidatormappervalidator.PasswordOptions,
 	logger *slog.Logger,
 ) (*DefaultService, error) {
 	// Initialize the raw parser
@@ -72,10 +77,12 @@ func NewService(
 	}
 
 	return &DefaultService{
-		service:     service,
-		generator:   generator,
-		logger:      logger,
-		validateFns: make(map[string]ValidateFn),
+		service:          service,
+		generator:        generator,
+		birthdateOptions: birthdateOptions,
+		passwordOptions:  passwordOptions,
+		logger:           logger,
+		validateFns:      make(map[string]ValidateFn),
 	}, nil
 }
 
@@ -123,18 +130,16 @@ func (d DefaultService) Username(
 //
 //   - birthdateField: the name of the birthdate field
 //   - birthdate: the birthdate to validate
-//   - options: the birthdate options
 //   - validations: the struct validations
 func (d DefaultService) Birthdate(
 	birthdateField string,
 	birthdate time.Time,
-	options *govalidatormappervalidator.BirthdateOptions,
 	validations *govalidatormappervalidation.StructValidations,
 ) {
 	d.service.Birthdate(
 		birthdateField,
 		birthdate,
-		options,
+		d.birthdateOptions,
 		validations,
 	)
 }
@@ -145,18 +150,16 @@ func (d DefaultService) Birthdate(
 //
 //   - passwordField: the name of the password field
 //   - password: the password to validate
-//   - options: the password options
 //   - validations: the struct validations
 func (d DefaultService) Password(
 	passwordField string,
 	password string,
-	options *govalidatormappervalidator.PasswordOptions,
 	validations *govalidatormappervalidation.StructValidations,
 ) {
 	d.service.Password(
 		passwordField,
 		password,
-		options,
+		d.passwordOptions,
 		validations,
 	)
 }
