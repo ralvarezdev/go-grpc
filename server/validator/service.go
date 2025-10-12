@@ -60,6 +60,8 @@ func NewService(
 		rawParser,
 		endParser,
 		validator,
+		birthdateOptions,
+		passwordOptions,
 		logger,
 	)
 	if err != nil {
@@ -139,7 +141,6 @@ func (d DefaultService) Birthdate(
 	d.service.Birthdate(
 		birthdateField,
 		birthdate,
-		d.birthdateOptions,
 		validations,
 	)
 }
@@ -159,7 +160,6 @@ func (d DefaultService) Password(
 	d.service.Password(
 		passwordField,
 		password,
-		d.passwordOptions,
 		validations,
 	)
 }
