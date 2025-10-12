@@ -32,6 +32,7 @@ github.com/ralvarezdev/go-jwt v0.5.4 h1:IvLWvQRL6+PJJ0kHetvqV68I0Wowc7gPsVyeVApF
 github.com/ralvarezdev/go-jwt v0.5.4/go.mod h1:7FVJv+0SNmBegRKzLisTpNd/EWAkgQgmkuBP0dcqQk8=
 github.com/ralvarezdev/go-reflect v0.2.8 h1:6bmnMMxwxKvd2IBWG+BEVYnjUBYQfCNkoCvVos89t1M=
 github.com/ralvarezdev/go-reflect v0.2.8/go.mod h1:jv3EqQfUixWtNeJd/Rnzf0IDcYZ1z3GApRdAGQHdHZQ=
+github.com/ralvarezdev/go-reflect v0.2.9/go.mod h1:jv3EqQfUixWtNeJd/Rnzf0IDcYZ1z3GApRdAGQHdHZQ=
 github.com/ralvarezdev/go-strings v0.1.15 h1:K+YnBiokOPNRvtVo7f2u0SyCjAILDVAqkRd2rgnBj4U=
 github.com/ralvarezdev/go-strings v0.1.15/go.mod h1:8sFOqmPJpqzS7bTjf91EzUCITnwpmkfifwY80GxV5r8=
 github.com/ralvarezdev/go-validator v0.6.3 h1:KSnTmM+o3+6Jcqq9cQ7NFEeGTyyiqo+QSUJxheE1HJE=
