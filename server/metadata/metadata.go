@@ -3,7 +3,7 @@ package metadata
 import (
 	"strings"
 
-	gogrpcgcloud "github.com/ralvarezdev/go-grpc/cloud/gcloud"
+	gogrpc "github.com/ralvarezdev/go-grpc"
 	gojwt "github.com/ralvarezdev/go-jwt"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	"google.golang.org/grpc/metadata"
@@ -27,6 +27,21 @@ func GetMetadataValue(md metadata.MD, key string) ([]string, error) {
 		return nil, ErrNilMetadataKeyValue
 	}
 	return value, nil
+}
+
+// DeleteMetadataValue deletes the value for a given key from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to delete the value from
+//   - key: The key to delete the value for
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the value deleted
+func DeleteMetadataValue(md metadata.MD, key string) metadata.MD {
+	md.Delete(key)
+	return md
 }
 
 // GetMetadataBearerToken gets the bearer token from the metadata
@@ -77,7 +92,7 @@ func GetMetadataBearerToken(md metadata.MD, key string) (string, error) {
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
 func GetMetadataAuthorizationToken(md metadata.MD) (string, error) {
-	return GetMetadataBearerToken(md, AuthorizationKey)
+	return GetMetadataBearerToken(md, gogrpc.AuthorizationMetadataKey)
 }
 
 // GetMetadataGCloudAuthorizationToken gets the GCloud authorization token from the metadata
@@ -91,35 +106,7 @@ func GetMetadataAuthorizationToken(md metadata.MD) (string, error) {
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
 func GetMetadataGCloudAuthorizationToken(md metadata.MD) (string, error) {
-	return GetMetadataBearerToken(md, gogrpcgcloud.AuthorizationMetadataKey)
-}
-
-// ClearMetadataAuthorizationToken clears the authorization token from the metadata
-//
-// Parameters:
-//
-//   - md: The metadata to clear the token from
-//
-// Returns:
-//
-//   - metadata.MD: The metadata with the token cleared
-func ClearMetadataAuthorizationToken(md metadata.MD) metadata.MD {
-	md.Delete(AuthorizationKey)
-	return md
-}
-
-// ClearMetadataGCloudAuthorizationToken clears the GCloud authorization token from the metadata
-//
-// Parameters:
-//
-//   - md: The metadata to clear the token from
-//
-// Returns:
-//
-//   - metadata.MD: The metadata with the token cleared
-func ClearMetadataGCloudAuthorizationToken(md metadata.MD) metadata.MD {
-	md.Delete(gogrpcgcloud.AuthorizationMetadataKey)
-	return md
+	return GetMetadataBearerToken(md, gogrpc.GCloudAuthorizationMetadataKey)
 }
 
 // GetMetadataRefreshToken gets the refresh token from the metadata
@@ -133,35 +120,58 @@ func ClearMetadataGCloudAuthorizationToken(md metadata.MD) metadata.MD {
 //   - string: The token
 //   - error: An error if the token is not found or any other error occurs
 func GetMetadataRefreshToken(md metadata.MD) (string, error) {
-	value, err := GetMetadataValue(md, RefreshTokenKey)
-	if err != nil {
-		return "", err
-	}
-	if len(value) == 0 {
-		return "", ErrNilMetadataKeyValue
-	}
-	return value[0], nil
+	return GetMetadataBearerToken(md, gogrpc.RefreshTokenMetadataKey)
 }
 
-// GetMetadataAccessToken gets the access token from the metadata
+// SetMetadataBearerToken sets the authorization token to the metadata
 //
 // Parameters:
 //
-//   - md: The metadata to get the token from
+//   - md: The metadata to set the token to
+//   - key: The metadata key where the token will be set
+//   - token: The token to set
 //
 // Returns:
 //
-//   - string: The token
-//   - error: An error if the token is not found or any other error occurs
-func GetMetadataAccessToken(md metadata.MD) (string, error) {
-	value, err := GetMetadataValue(md, AccessTokenKey)
-	if err != nil {
-		return "", err
-	}
-	if len(value) == 0 {
-		return "", ErrNilMetadataKeyValue
-	}
-	return value[0], nil
+//   - metadata.MD: The metadata with the token set
+func SetMetadataBearerToken(md metadata.MD, key, token string) metadata.MD {
+	md.Set(key, gojwt.BearerPrefix+" "+token)
+	return md
+}
+
+// SetMetadataAuthorizationToken sets the authorization token to the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to set the token to
+//   - token: The token to set
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token set
+func SetMetadataAuthorizationToken(md metadata.MD, token string) metadata.MD {
+	return SetMetadataBearerToken(md, gogrpc.AuthorizationMetadataKey, token)
+}
+
+// SetMetadataGCloudAuthorizationToken sets the GCloud authorization token to the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to set the token to
+//   - token: The token to set
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token set
+func SetMetadataGCloudAuthorizationToken(
+	md metadata.MD,
+	token string,
+) metadata.MD {
+	return SetMetadataBearerToken(
+		md,
+		gogrpc.GCloudAuthorizationMetadataKey,
+		token,
+	)
 }
 
 // SetMetadataRefreshToken sets the refresh token to the metadata
@@ -175,8 +185,11 @@ func GetMetadataAccessToken(md metadata.MD) (string, error) {
 //
 //   - metadata.MD: The metadata with the token set
 func SetMetadataRefreshToken(md metadata.MD, refreshToken string) metadata.MD {
-	md.Set(RefreshTokenKey, refreshToken)
-	return md
+	return SetMetadataBearerToken(
+		md,
+		gogrpc.RefreshTokenMetadataKey,
+		refreshToken,
+	)
 }
 
 // SetMetadataAccessToken sets the access token to the metadata
@@ -190,6 +203,75 @@ func SetMetadataRefreshToken(md metadata.MD, refreshToken string) metadata.MD {
 //
 //   - metadata.MD: The metadata with the token set
 func SetMetadataAccessToken(md metadata.MD, accessToken string) metadata.MD {
-	md.Set(AccessTokenKey, accessToken)
-	return md
+	return SetMetadataBearerToken(
+		md,
+		gogrpc.AccessTokenMetadataKey,
+		accessToken,
+	)
+}
+
+// GetMetadataAccessToken gets the access token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to get the token from
+//
+// Returns:
+//
+//   - string: The token
+//   - error: An error if the token is not found or any other error occurs
+func GetMetadataAccessToken(md metadata.MD) (string, error) {
+	return GetMetadataBearerToken(md, gogrpc.AccessTokenMetadataKey)
+}
+
+// ClearMetadataAuthorizationToken clears the authorization token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to clear the token from
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token cleared
+func ClearMetadataAuthorizationToken(md metadata.MD) metadata.MD {
+	return DeleteMetadataValue(md, gogrpc.AuthorizationMetadataKey)
+}
+
+// ClearMetadataGCloudAuthorizationToken clears the GCloud authorization token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to clear the token from
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token cleared
+func ClearMetadataGCloudAuthorizationToken(md metadata.MD) metadata.MD {
+	return DeleteMetadataValue(md, gogrpc.GCloudAuthorizationMetadataKey)
+}
+
+// ClearMetadataRefreshToken clears the refresh token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to clear the token from
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token cleared
+func ClearMetadataRefreshToken(md metadata.MD) metadata.MD {
+	return DeleteMetadataValue(md, gogrpc.RefreshTokenMetadataKey)
+}
+
+// ClearMetadataAccessToken clears the access token from the metadata
+//
+// Parameters:
+//
+//   - md: The metadata to clear the token from
+//
+// Returns:
+//
+//   - metadata.MD: The metadata with the token cleared
+func ClearMetadataAccessToken(md metadata.MD) metadata.MD {
+	return DeleteMetadataValue(md, gogrpc.AccessTokenMetadataKey)
 }

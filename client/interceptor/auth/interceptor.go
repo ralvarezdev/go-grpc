@@ -4,7 +4,7 @@ import (
 	"context"
 
 	gogrpcclientmd "github.com/ralvarezdev/go-grpc/client/metadata"
-	gogrpcservermd "github.com/ralvarezdev/go-grpc/server/metadata"
+	gogrpcservermd "github.com/ralvarezdev/go-grpc/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	"google.golang.org/grpc"
