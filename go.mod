@@ -5,7 +5,6 @@ go 1.24.0
 require (
 	github.com/ralvarezdev/go-flags v0.3.8
 	github.com/ralvarezdev/go-jwt v0.5.5
-	github.com/ralvarezdev/go-net v0.11.4
 	github.com/ralvarezdev/go-reflect v0.2.10
 	github.com/ralvarezdev/go-validator v0.6.13
 	go.mongodb.org/mongo-driver v1.17.4

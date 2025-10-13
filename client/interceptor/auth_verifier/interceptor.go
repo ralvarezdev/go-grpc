@@ -1,16 +1,15 @@
-package auth
+package auth_verifier
 
 import (
 	"context"
+	"log/slog"
 
 	gogrpcclientmd "github.com/ralvarezdev/go-grpc/client/metadata"
-	gogrpcservermd "github.com/ralvarezdev/go-grpc/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/oauth"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -18,7 +17,8 @@ type (
 	// Interceptor is the interceptor for the authentication
 	Interceptor struct {
 		interceptions     map[string]*gojwttoken.Token
-		GCloudAccessToken *string
+		gCloudAccessToken *string
+		logger            *slog.Logger
 	}
 
 	// Options is the options for the interceptor
@@ -50,6 +50,7 @@ func NewOptions(
 //
 //   - interceptions: the gRPC interceptions to determine which methods require authentication
 //   - options: the options for the interceptor
+//   - logger: the logger to use for logging
 //
 // Returns:
 //
@@ -58,6 +59,7 @@ func NewOptions(
 func NewInterceptor(
 	interceptions map[string]*gojwttoken.Token,
 	options *Options,
+	logger *slog.Logger,
 ) (*Interceptor, error) {
 	// Check if the gRPC interceptions is nil
 	if interceptions == nil {
@@ -77,18 +79,24 @@ func NewInterceptor(
 		gCloudAccessToken = &token.AccessToken
 	}
 
+	if logger != nil {
+		logger = logger.With(
+			slog.String("component", "grpc_client_interceptor_auth"),
+		)
+	}
+
 	return &Interceptor{
-		GCloudAccessToken: gCloudAccessToken,
+		gCloudAccessToken: gCloudAccessToken,
 		interceptions:     interceptions,
 	}, nil
 }
 
-// Authenticate returns a new unary client interceptor that adds authentication metadata to the context
+// VerifyAuthentication returns a new unary client interceptor that verifies the authentication metadata from the context is set if needed
 //
 // Returns:
 //
 //   - grpc.UnaryClientInterceptor: the interceptor
-func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
+func (i Interceptor) VerifyAuthentication() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
@@ -99,36 +107,34 @@ func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 	) error {
 		// Check if the method should be intercepted
 		interception, ok := i.interceptions[method]
-		if !ok || interception == nil {
-			// Create the unauthenticated context metadata if the access token is not nil
-			if i.GCloudAccessToken != nil {
-				ctx = gogrpcclientmd.SetCtxGCloudAuthorization(
-					ctx,
-					*i.GCloudAccessToken,
-				)
-			}
-		} else {
-			// Get metadata from the context
-			md, ok := metadata.FromOutgoingContext(ctx)
-			if !ok {
-				return status.Error(
-					codes.Unauthenticated,
-					gojwtgrpc.ErrMissingMetadata.Error(),
-				)
-			}
 
-			// Get the raw token from the metadata
-			rawToken, err := gogrpcservermd.GetMetadataAuthorizationToken(md)
+		// Add GCloud authorization if available
+		if i.gCloudAccessToken == nil {
+			ctx = gogrpcclientmd.SetCtxGCloudAuthorization(
+				ctx,
+				*i.gCloudAccessToken,
+			)
+		}
+
+		// If the method is intercepted, verify it has the authorization metadata
+		if ok && interception != nil {
+			// Try to get the authorization metadata from the context
+			_, err := gogrpcclientmd.GetCtxMetadataAuthorizationToken(
+				ctx,
+			)
 			if err != nil {
-				return status.Error(codes.Unauthenticated, err.Error())
-			}
-
-			// Create the authenticated context metadata
-			ctx = gogrpcclientmd.SetCtxAuthorization(ctx, rawToken)
-			if i.GCloudAccessToken == nil {
-				ctx = gogrpcclientmd.SetCtxGCloudAuthorization(
-					ctx,
-					*i.GCloudAccessToken,
+				if i.logger != nil {
+					i.logger.Warn(
+						"Missing authorization metadata for intercepted method",
+						slog.String("method", method),
+						slog.String("interception", interception.String()),
+						slog.String("error", err.Error()),
+					)
+				}
+				return status.Errorf(
+					codes.Unauthenticated,
+					"Missing authorization metadata for intercepted method: %s",
+					method,
 				)
 			}
 		}

@@ -5,8 +5,8 @@ import (
 	"errors"
 
 	gogrpc "github.com/ralvarezdev/go-grpc"
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	gogrpcserver "github.com/ralvarezdev/go-grpc/server"
-	gogrpcservermd "github.com/ralvarezdev/go-grpc/server/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwtgrpcctx "github.com/ralvarezdev/go-jwt/grpc/context"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
@@ -81,7 +81,7 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Get the raw token from the metadata
-		rawToken, err := gogrpcservermd.GetMetadataAuthorizationToken(md)
+		rawToken, err := gogrpcmd.GetMetadataAuthorizationToken(md)
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
