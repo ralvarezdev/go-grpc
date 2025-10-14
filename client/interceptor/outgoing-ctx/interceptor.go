@@ -66,7 +66,7 @@ func (i Interceptor) PrintOutgoingCtx() grpc.UnaryClientInterceptor {
 			for key, values := range md {
 				for _, value := range values {
 					i.logger.Debug(
-						"found metadata in outgoing context",
+						"Found metadata in outgoing context",
 						slog.String("method", method),
 						slog.String("key", key),
 						slog.String("value", value),

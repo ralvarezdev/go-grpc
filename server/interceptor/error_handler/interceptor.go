@@ -53,7 +53,7 @@ func (i Interceptor) HandleError() grpc.UnaryServerInterceptor {
 				// Log the panic
 				if i.logger != nil {
 					i.logger.Error(
-						"panic recovered",
+						"Panic recovered",
 						slog.Any("method", info.FullMethod),
 						slog.Any("error", r),
 					)

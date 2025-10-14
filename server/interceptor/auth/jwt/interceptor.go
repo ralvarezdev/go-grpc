@@ -1,4 +1,4 @@
-package auth
+package jwt
 
 import (
 	"context"
@@ -14,7 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -71,17 +70,8 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 			return handler(ctx, req)
 		}
 
-		// Get metadata from the context
-		md, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, status.Error(
-				codes.Unauthenticated,
-				gojwtgrpc.ErrMissingMetadata.Error(),
-			)
-		}
-
 		// Get the raw token from the metadata
-		rawToken, err := gogrpcmd.GetMetadataAuthorizationToken(md)
+		rawToken, err := gogrpcmd.GetCtxMetadataAuthorizationToken(ctx)
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}

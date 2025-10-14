@@ -5,6 +5,6 @@ import (
 )
 
 var (
-	ErrNilMetadata         = errors.New("metadata is nil")
+	ErrNilMetadata         = errors.New("missing metadata")
 	ErrNilMetadataKeyValue = errors.New("metadata key value is nil")
 )

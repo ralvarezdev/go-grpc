@@ -4,7 +4,7 @@ import (
 	"context"
 	"log/slog"
 
-	gogrpcclientmd "github.com/ralvarezdev/go-grpc/client/metadata"
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	"google.golang.org/grpc"
@@ -110,7 +110,7 @@ func (i Interceptor) VerifyAuthentication() grpc.UnaryClientInterceptor {
 
 		// Add GCloud authorization if available
 		if i.gCloudAccessToken == nil {
-			ctx = gogrpcclientmd.SetCtxGCloudAuthorization(
+			ctx, _ = gogrpcmd.SetCtxMetadataGCloudAuthorizationToken(
 				ctx,
 				*i.gCloudAccessToken,
 			)
@@ -119,7 +119,7 @@ func (i Interceptor) VerifyAuthentication() grpc.UnaryClientInterceptor {
 		// If the method is intercepted, verify it has the authorization metadata
 		if ok && interception != nil {
 			// Try to get the authorization metadata from the context
-			_, err := gogrpcclientmd.GetCtxMetadataAuthorizationToken(
+			_, err := gogrpcmd.GetCtxMetadataAuthorizationToken(
 				ctx,
 			)
 			if err != nil {
