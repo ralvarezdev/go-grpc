@@ -12,7 +12,8 @@ import (
 type (
 	// Interceptor is the interceptor for API key authentication
 	Interceptor struct {
-		allowedKeys map[string]struct{}
+		allowedKeys   map[string]struct{}
+		interceptions map[string]struct{}
 	}
 )
 
@@ -21,15 +22,18 @@ type (
 // Parameters:
 //
 //   - keys: the allowed API keys
+//   - methodsToIntercept: a slice of method names to intercept
 //
 // Returns:
 //
 //   - *Interceptor: the interceptor
 //   - error: if no API keys are provided
-func NewInterceptor(keys []string) (*Interceptor, error) {
+func NewInterceptor(keys []string, methodsToIntercept []string) (
+	*Interceptor,
+	error,
+) {
 	// Check if no API keys are provided
 	if len(keys) == 0 {
-
 		return nil, ErrNoAPIKeysProvided
 	}
 
@@ -38,7 +42,16 @@ func NewInterceptor(keys []string) (*Interceptor, error) {
 	for _, k := range keys {
 		allowed[k] = struct{}{}
 	}
-	return &Interceptor{allowedKeys: allowed}, nil
+
+	// Create a map of methods to intercept for efficient lookup
+	interceptions := make(map[string]struct{})
+	if methodsToIntercept != nil && len(methodsToIntercept) != 0 {
+		for _, method := range methodsToIntercept {
+			interceptions[method] = struct{}{}
+		}
+	}
+
+	return &Interceptor{allowedKeys: allowed, interceptions: interceptions}, nil
 }
 
 // Authenticate returns the API key authentication interceptor
@@ -46,11 +59,17 @@ func NewInterceptor(keys []string) (*Interceptor, error) {
 // Returns:
 //
 //   - grpc.UnaryServerInterceptor: the interceptor
-func (i *Interceptor) Authenticate() grpc.UnaryServerInterceptor {
+func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
+		// Check if the method should be intercepted
+		_, ok := i.interceptions[info.FullMethod]
+		if !ok {
+			return handler(ctx, req)
+		}
+
 		// Get the raw token from the metadata
 		rawToken, err := gogrpcmd.GetCtxMetadataAuthorizationToken(ctx)
 		if err != nil {
