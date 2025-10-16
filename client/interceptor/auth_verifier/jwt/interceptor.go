@@ -1,4 +1,4 @@
-package auth_verifier
+package api_key
 
 import (
 	"context"
@@ -81,13 +81,17 @@ func NewInterceptor(
 
 	if logger != nil {
 		logger = logger.With(
-			slog.String("component", "grpc_client_interceptor_auth"),
+			slog.String(
+				"component",
+				"grpc_client_interceptor_auth_verifier_jwt",
+			),
 		)
 	}
 
 	return &Interceptor{
 		gCloudAccessToken: gCloudAccessToken,
 		interceptions:     interceptions,
+		logger:            logger,
 	}, nil
 }
 
