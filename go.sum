@@ -20,6 +20,9 @@ github.com/klauspost/compress v1.16.7 h1:2mk3MPGNzKyxErAw8YaohYh69+pa4sIQSC0fPGC
 github.com/klauspost/compress v1.16.7/go.mod h1:ntbaceVETuRiXiv4DpjP66DpAtAGkEQskQzEyD//IeE=
 github.com/montanaflynn/stats v0.7.1 h1:etflOAAHORrCC44V+aR6Ftzort912ZU+YLiSTuV8eaE=
 github.com/montanaflynn/stats v0.7.1/go.mod h1:etXPPgVO6n31NxCd9KQUMvCM+ve0ruNzt6R8Bnaayow=
+github.com/ralvarezdev/go-api-key v0.1.0 h1:KDggej5GgD6VsizOing5z327FWcp91R+e+i+glhpAwU=
+github.com/ralvarezdev/go-api-key v0.1.0/go.mod h1:P1pg+gLdshE154kgbFk363uv8HK353OMKxXqS9ttqjo=
+github.com/ralvarezdev/go-api-key v0.1.1/go.mod h1:P1pg+gLdshE154kgbFk363uv8HK353OMKxXqS9ttqjo=
 github.com/ralvarezdev/go-flags v0.3.8 h1:b/doNRr2HsniEpz8NjbH2vxJH5WMeymIx0LAzDIOnOc=
 github.com/ralvarezdev/go-flags v0.3.8/go.mod h1:R3yVBYvzwqfOp26LidaiJ/zftVAnPC3pKunVpV/vosE=
 github.com/ralvarezdev/go-jwt v0.5.5 h1:Mod+huHLK7m/bgqDXF4dHeuD6LhPFDCtKXEFycELXZE=

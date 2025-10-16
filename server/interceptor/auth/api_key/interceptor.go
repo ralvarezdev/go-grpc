@@ -3,6 +3,7 @@ package api_keys
 import (
 	"context"
 
+	goapikey "github.com/ralvarezdev/go-api-key"
 	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -12,7 +13,7 @@ import (
 type (
 	// Interceptor is the interceptor for API key authentication
 	Interceptor struct {
-		allowedKeys   map[string]struct{}
+		apiKeyService goapikey.BasicService
 		interceptions map[string]struct{}
 	}
 )
@@ -21,26 +22,23 @@ type (
 //
 // Parameters:
 //
-//   - keys: the allowed API keys
+//   - apiKeyService: the API key basic service to validate the API keys
 //   - methodsToIntercept: a slice of method names to intercept
 //
 // Returns:
 //
 //   - *Interceptor: the interceptor
 //   - error: if no API keys are provided
-func NewInterceptor(keys []string, methodsToIntercept []string) (
+func NewInterceptor(
+	apiKeyService goapikey.BasicService,
+	methodsToIntercept []string,
+) (
 	*Interceptor,
 	error,
 ) {
-	// Check if no API keys are provided
-	if len(keys) == 0 {
-		return nil, ErrNoAPIKeysProvided
-	}
-
-	// Create a map of allowed API keys for efficient lookup
-	allowed := make(map[string]struct{}, len(keys))
-	for _, k := range keys {
-		allowed[k] = struct{}{}
+	// Check if the API key service is nil
+	if apiKeyService == nil {
+		return nil, goapikey.ErrNilService
 	}
 
 	// Create a map of methods to intercept for efficient lookup
@@ -51,7 +49,10 @@ func NewInterceptor(keys []string, methodsToIntercept []string) (
 		}
 	}
 
-	return &Interceptor{allowedKeys: allowed, interceptions: interceptions}, nil
+	return &Interceptor{
+		apiKeyService: apiKeyService,
+		interceptions: interceptions,
+	}, nil
 }
 
 // Authenticate returns the API key authentication interceptor
@@ -77,7 +78,7 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Validate the API key
-		if _, allowed := i.allowedKeys[rawToken]; !allowed {
+		if valid := i.apiKeyService.IsAPIKeyValid(rawToken); !valid {
 			return nil, status.Error(codes.Unauthenticated, "invalid API key")
 		}
 		return handler(ctx, req)
