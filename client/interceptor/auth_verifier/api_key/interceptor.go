@@ -23,7 +23,7 @@ type (
 //
 // Parameters:
 //
-//   - interceptions: the gRPC interceptions to determine which methods require authentication
+//   - methodsToIntercept: a slice of method names to intercept
 //   - logger: the logger to use for logging
 //
 // Returns:
@@ -31,12 +31,18 @@ type (
 //   - *Interceptor: the interceptor
 //   - error: an error if the interceptions map is nil
 func NewInterceptor(
-	interceptions map[string]struct{},
+	methodsToIntercept []string,
 	logger *slog.Logger,
 ) (*Interceptor, error) {
 	// Check if the gRPC interceptions is nil
-	if interceptions == nil {
+	if methodsToIntercept == nil {
 		return nil, goapikeygrpc.ErrNilGRPCInterceptions
+	}
+
+	// Create a map of methods to intercept for efficient lookup
+	interceptions := make(map[string]struct{})
+	for _, method := range methodsToIntercept {
+		interceptions[method] = struct{}{}
 	}
 
 	if logger != nil {
