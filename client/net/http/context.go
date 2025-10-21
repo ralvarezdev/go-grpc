@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	gojwtnethttpctx "github.com/ralvarezdev/go-jwt/net/http/context"
+
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
 
 // SetCtxMetadataAuthorizationToken is a helper function to set the authorization metadata in the context
@@ -26,7 +27,7 @@ func SetCtxMetadataAuthorizationToken(
 	r *http.Request,
 ) (context.Context, error) {
 	if r == nil {
-		return ctx, ErrNilRequest
+		return nil, ErrNilRequest
 	}
 
 	// Get the authorization from the request context

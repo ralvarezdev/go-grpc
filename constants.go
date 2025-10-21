@@ -1,4 +1,4 @@
-package go_grpc
+package gogrpc
 
 const (
 	// AuthorizationMetadataKey is the key used for authorization in metadata.

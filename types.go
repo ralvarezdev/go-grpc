@@ -1,4 +1,4 @@
-package go_grpc
+package gogrpc
 
 import (
 	"log/slog"
@@ -26,7 +26,7 @@ type (
 func NewDefaultErrorDetailsGenerator(logger *slog.Logger) *DefaultErrorDetailsGenerator {
 	if logger != nil {
 		logger = logger.With(
-			slog.String("component", "grpc_error_details_generator"),
+			slog.String("generator", "grpc_error_details"),
 		)
 	}
 
@@ -45,7 +45,9 @@ func NewDefaultErrorDetailsGenerator(logger *slog.Logger) *DefaultErrorDetailsGe
 // Returns:
 //
 //   - *errdetails.BadRequest_FieldViolation: the created field violation
-func (d DefaultErrorDetailsGenerator) NewFieldViolation(field, description string) *errdetails.BadRequest_FieldViolation {
+func (d DefaultErrorDetailsGenerator) NewFieldViolation(
+	field, description string,
+) *errdetails.BadRequest_FieldViolation {
 	return &errdetails.BadRequest_FieldViolation{
 		Field:       field,
 		Description: description,
@@ -62,7 +64,9 @@ func (d DefaultErrorDetailsGenerator) NewFieldViolation(field, description strin
 // Returns:
 //
 //   - []*errdetails.BadRequest_FieldViolation: the created field violations
-func (d DefaultErrorDetailsGenerator) NewSingleFieldViolation(field, description string) []*errdetails.BadRequest_FieldViolation {
+func (d DefaultErrorDetailsGenerator) NewSingleFieldViolation(
+	field, description string,
+) []*errdetails.BadRequest_FieldViolation {
 	return []*errdetails.BadRequest_FieldViolation{
 		d.NewFieldViolation(field, description),
 	}
@@ -77,7 +81,9 @@ func (d DefaultErrorDetailsGenerator) NewSingleFieldViolation(field, description
 // Returns:
 //
 //   - *errdetails.BadRequest: the created bad request
-func (d DefaultErrorDetailsGenerator) NewBadRequest(violations []*errdetails.BadRequest_FieldViolation) *errdetails.BadRequest {
+func (d DefaultErrorDetailsGenerator) NewBadRequest(
+	violations []*errdetails.BadRequest_FieldViolation,
+) *errdetails.BadRequest {
 	return &errdetails.BadRequest{
 		FieldViolations: violations,
 	}
@@ -109,7 +115,7 @@ func (d DefaultErrorDetailsGenerator) NewSingleBadRequest(field, description str
 //
 //   - *errdetails.BadRequest: the created bad request
 func (d DefaultErrorDetailsGenerator) NewStructSingleFieldBadRequest(
-	structExample interface{},
+	structExample any,
 	field, description string,
 ) *errdetails.BadRequest {
 	// Warn if structExample is nil

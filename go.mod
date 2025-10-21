@@ -3,6 +3,7 @@ module github.com/ralvarezdev/go-grpc
 go 1.25.1
 
 require (
+	github.com/ralvarezdev/go-api-key v0.1.3
 	github.com/ralvarezdev/go-flags v0.3.8
 	github.com/ralvarezdev/go-jwt v0.6.6
 	github.com/ralvarezdev/go-reflect v0.2.10
@@ -18,7 +19,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/klauspost/compress v1.16.7 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
-	github.com/ralvarezdev/go-api-key v0.1.3 // indirect
 	github.com/ralvarezdev/go-strings v0.1.16 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect

@@ -1,4 +1,4 @@
-package outgoing_ctx
+package outgoing
 
 import (
 	"context"
@@ -29,7 +29,7 @@ type (
 func NewInterceptor(logger *slog.Logger) *Interceptor {
 	if logger != nil {
 		logger = logger.With(
-			slog.String("component", "client_interceptor_outgoing_ctx"),
+			slog.String("grpc_client_interceptor", "outgoing_context"),
 		)
 	}
 
@@ -47,7 +47,7 @@ func (i Interceptor) PrintOutgoingCtx() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
-		req, reply interface{},
+		req, reply any,
 		cc *grpc.ClientConn,
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,

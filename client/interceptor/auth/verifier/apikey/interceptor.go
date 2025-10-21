@@ -1,14 +1,15 @@
-package jwt
+package apikey
 
 import (
 	"context"
 	"log/slog"
 
 	goapikeygrpc "github.com/ralvarezdev/go-api-key/grpc"
-	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
 
 type (
@@ -48,8 +49,8 @@ func NewInterceptor(
 	if logger != nil {
 		logger = logger.With(
 			slog.String(
-				"component",
-				"grpc_client_interceptor_auth_verifier_api_key",
+				"grpc_client_interceptor",
+				"api_key_verifier",
 			),
 		)
 	}
@@ -60,16 +61,17 @@ func NewInterceptor(
 	}, nil
 }
 
-// VerifyAuthentication returns a new unary client interceptor that verifies the authentication metadata from the context is set if needed
+// Verify returns a new unary client interceptor that verifies the authentication metadata from the context is set if
+// needed
 //
 // Returns:
 //
 //   - grpc.UnaryClientInterceptor: the interceptor
-func (i Interceptor) VerifyAuthentication() grpc.UnaryClientInterceptor {
+func (i Interceptor) Verify() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
-		req, reply interface{},
+		req, reply any,
 		cc *grpc.ClientConn,
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,

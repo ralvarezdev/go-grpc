@@ -1,13 +1,14 @@
-package error_handler
+package errorhandler
 
 import (
 	"context"
 	"log/slog"
 
-	gogrpc "github.com/ralvarezdev/go-grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gogrpc "github.com/ralvarezdev/go-grpc"
 )
 
 type (
@@ -29,7 +30,7 @@ type (
 func NewInterceptor(logger *slog.Logger) *Interceptor {
 	if logger != nil {
 		logger = logger.With(
-			slog.String("interceptor", "error_handler"),
+			slog.String("grpc_client_interceptor", "error_handler"),
 		)
 	}
 
@@ -45,9 +46,9 @@ func NewInterceptor(logger *slog.Logger) *Interceptor {
 //   - grpc.UnaryServerInterceptor: the error handler interceptor
 func (i Interceptor) HandleError() grpc.UnaryServerInterceptor {
 	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
+		ctx context.Context, req any, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
-	) (value interface{}, err error) {
+	) (value any, err error) {
 		defer func() {
 			if r := recover(); r != nil {
 				// Log the panic
@@ -60,7 +61,7 @@ func (i Interceptor) HandleError() grpc.UnaryServerInterceptor {
 				}
 
 				// Set the error to internal server error
-				err = status.Errorf(codes.Internal, gogrpc.InternalServerError)
+				err = status.Error(codes.Internal, gogrpc.InternalServerError)
 			}
 		}()
 		return handler(ctx, req)

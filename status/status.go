@@ -4,9 +4,10 @@ import (
 	"errors"
 
 	goflagsmode "github.com/ralvarezdev/go-flags/mode"
-	gogrpc "github.com/ralvarezdev/go-grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gogrpc "github.com/ralvarezdev/go-grpc"
 )
 
 // ExtractErrorFromStatus extracts the error from the status

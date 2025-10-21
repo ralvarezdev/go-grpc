@@ -1,13 +1,14 @@
-package api_keys
+package apikeys
 
 import (
 	"context"
 
 	goapikey "github.com/ralvarezdev/go-api-key"
-	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
 
 type (
@@ -43,7 +44,7 @@ func NewInterceptor(
 
 	// Create a map of methods to intercept for efficient lookup
 	interceptions := make(map[string]struct{})
-	if methodsToIntercept != nil && len(methodsToIntercept) != 0 {
+	if len(methodsToIntercept) != 0 {
 		for _, method := range methodsToIntercept {
 			interceptions[method] = struct{}{}
 		}
@@ -62,9 +63,9 @@ func NewInterceptor(
 //   - grpc.UnaryServerInterceptor: the interceptor
 func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
+		ctx context.Context, req any, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
-	) (interface{}, error) {
+	) (any, error) {
 		// Check if the method should be intercepted
 		_, ok := i.interceptions[info.FullMethod]
 		if !ok {

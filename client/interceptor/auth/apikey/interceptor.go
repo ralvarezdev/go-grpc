@@ -1,20 +1,21 @@
-package jwt
+package apikey
 
 import (
 	"context"
 	"log/slog"
 
 	goapikeygrpc "github.com/ralvarezdev/go-api-key/grpc"
-	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	"google.golang.org/grpc"
+
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
 
 type (
 	// Interceptor is the interceptor for the authentication
 	Interceptor struct {
-		interceptions map[string]struct{}
-		apiKey        string
 		logger        *slog.Logger
+		apiKey        string
+		interceptions map[string]struct{}
 	}
 )
 
@@ -54,8 +55,8 @@ func NewInterceptor(
 	if logger != nil {
 		logger = logger.With(
 			slog.String(
-				"component",
-				"grpc_client_interceptor_auth_api_key",
+				"grpc_client_interceptor",
+				"api_key_authenticator",
 			),
 		)
 	}
@@ -76,7 +77,7 @@ func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
-		req, reply interface{},
+		req, reply any,
 		cc *grpc.ClientConn,
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,

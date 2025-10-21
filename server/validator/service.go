@@ -74,7 +74,7 @@ func NewService(
 	// Create a logger for the service
 	if logger != nil {
 		logger = logger.With(
-			slog.String("component", "grpc_validator_service"),
+			slog.String("service", "grpc_validator"),
 		)
 	}
 
@@ -175,7 +175,7 @@ func (d DefaultService) Password(
 //   - *govalidatormapper.Mapper: the mapper
 //   - error: if there was an error creating the mapper
 func (d DefaultService) createMapper(
-	structInstance interface{},
+	structInstance any,
 ) (*govalidatormapper.Mapper, reflect.Type, error) {
 	// Get the type of the request
 	structInstanceType := goreflect.GetTypeOf(structInstance)
@@ -215,9 +215,9 @@ func (d DefaultService) createMapper(
 //   - ValidateFn: the validate function
 //   - error: if there was an error creating the validate function
 func (d DefaultService) CreateValidateFn(
-	requestExample interface{},
+	requestExample any,
 	cache bool,
-	auxiliaryValidatorFns ...interface{},
+	auxiliaryValidatorFns ...any,
 ) (ValidateFn, error) {
 	// Create the mapper
 	mapper, requestType, err := d.createMapper(requestExample)
@@ -250,18 +250,18 @@ func (d DefaultService) CreateValidateFn(
 	}
 
 	// Create the wrapped validate function
-	validateFn := func(request interface{}) error {
+	validateFn := func(request any) error {
 		// Get a new instance of the body
 		dest := goreflect.NewInstanceFromType(requestType)
 
 		// Validate the request
-		validations, err := innerValidateFn(dest)
-		if err != nil {
+		validations, innerErr := innerValidateFn(dest)
+		if innerErr != nil {
 			if d.logger != nil {
 				d.logger.Error(
 					"Failed to validate request",
 					slog.String("type", requestType.String()),
-					slog.Any("error", err),
+					slog.Any("error", innerErr),
 				)
 			}
 			return status.Error(codes.Internal, "failed to validate request")
@@ -287,7 +287,17 @@ func (d DefaultService) CreateValidateFn(
 
 		// Create status with details
 		st := status.New(codes.InvalidArgument, "validation failed")
-		stWithDetails, _ := st.WithDetails(badRequest)
+		stWithDetails, detailsErr := st.WithDetails(badRequest)
+		if detailsErr != nil {
+			if d.logger != nil {
+				d.logger.Error(
+					"Failed to add details to status",
+					slog.String("type", requestType.String()),
+					slog.Any("error", detailsErr),
+				)
+			}
+			return status.Error(codes.Internal, "failed to validate request")
+		}
 
 		// Return error in your gRPC handler
 		return stWithDetails.Err()
@@ -314,8 +324,8 @@ func (d DefaultService) CreateValidateFn(
 //
 //   - error: if there was an error validating the request
 func (d DefaultService) Validate(
-	request interface{},
-	auxiliaryValidatorFns ...interface{},
+	request any,
+	auxiliaryValidatorFns ...any,
 ) error {
 	// Create and cache the validate function
 	validateFn, err := d.CreateValidateFn(

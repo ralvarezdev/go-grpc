@@ -4,9 +4,6 @@ import (
 	"context"
 	"errors"
 
-	gogrpc "github.com/ralvarezdev/go-grpc"
-	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
-	gogrpcserver "github.com/ralvarezdev/go-grpc/server"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwtgrpcctx "github.com/ralvarezdev/go-jwt/grpc/context"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
@@ -15,6 +12,10 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gogrpc "github.com/ralvarezdev/go-grpc"
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
+	gogrpcserver "github.com/ralvarezdev/go-grpc/server"
 )
 
 type (
@@ -61,9 +62,9 @@ func NewInterceptor(
 //   - grpc.UnaryServerInterceptor: the authentication interceptor
 func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 	return func(
-		ctx context.Context, req interface{}, info *grpc.UnaryServerInfo,
+		ctx context.Context, req any, info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
-	) (interface{}, error) {
+	) (any, error) {
 		// Check if the method should be intercepted
 		interception, ok := i.interceptions[info.FullMethod]
 		if !ok || interception == nil {

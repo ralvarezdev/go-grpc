@@ -3,10 +3,11 @@ package metadata
 import (
 	"strings"
 
-	gogrpc "github.com/ralvarezdev/go-grpc"
 	gojwt "github.com/ralvarezdev/go-jwt"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	"google.golang.org/grpc/metadata"
+
+	gogrpc "github.com/ralvarezdev/go-grpc"
 )
 
 // GetMetadataValue gets the value for a given key from the metadata

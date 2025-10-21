@@ -5,8 +5,13 @@ import (
 )
 
 type (
-	// Authentication interface
-	Authentication interface {
+	// Authenticator interface
+	Authenticator interface {
 		Authenticate() grpc.UnaryClientInterceptor
+	}
+
+	// Verifier interface
+	Verifier interface {
+		Verify() grpc.UnaryClientInterceptor
 	}
 )

@@ -30,13 +30,13 @@ type (
 			validations *validation.StructValidations,
 		)
 		CreateValidateFn(
-			requestExample interface{},
+			requestExample any,
 			cache bool,
-			auxiliaryValidatorFns ...interface{},
+			auxiliaryValidatorFns ...any,
 		) (ValidateFn, error)
 		Validate(
-			request interface{},
-			auxiliaryValidatorFns ...interface{},
+			request any,
+			auxiliaryValidatorFns ...any,
 		) error
 	}
 )

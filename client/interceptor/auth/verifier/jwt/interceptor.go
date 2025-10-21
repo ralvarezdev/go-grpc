@@ -1,16 +1,17 @@
-package api_key
+package jwt
 
 import (
 	"context"
 	"log/slog"
 
-	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/status"
+
+	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
 
 type (
@@ -82,8 +83,8 @@ func NewInterceptor(
 	if logger != nil {
 		logger = logger.With(
 			slog.String(
-				"component",
-				"grpc_client_interceptor_auth_verifier_jwt",
+				"grpc_client_interceptor",
+				"jwt_verifier",
 			),
 		)
 	}
@@ -95,16 +96,17 @@ func NewInterceptor(
 	}, nil
 }
 
-// VerifyAuthentication returns a new unary client interceptor that verifies the authentication metadata from the context is set if needed
+// Verify returns a new unary client interceptor that verifies the authentication metadata from the context is set if
+// needed
 //
 // Returns:
 //
 //   - grpc.UnaryClientInterceptor: the interceptor
-func (i Interceptor) VerifyAuthentication() grpc.UnaryClientInterceptor {
+func (i Interceptor) Verify() grpc.UnaryClientInterceptor {
 	return func(
 		ctx context.Context,
 		method string,
-		req, reply interface{},
+		req, reply any,
 		cc *grpc.ClientConn,
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,
@@ -113,26 +115,35 @@ func (i Interceptor) VerifyAuthentication() grpc.UnaryClientInterceptor {
 		interception, ok := i.interceptions[method]
 
 		// Add GCloud authorization if available
+		var err error
 		if i.gCloudAccessToken == nil {
-			ctx, _ = gogrpcmd.SetCtxMetadataGCloudAuthorizationToken(
+			ctx, err = gogrpcmd.SetCtxMetadataGCloudAuthorizationToken(
 				ctx,
 				*i.gCloudAccessToken,
 			)
+			if err != nil {
+				if i.logger != nil {
+					i.logger.Warn(
+						"Failed to set GCloud metadata authorization token for the gRPC client",
+						slog.String("error", err.Error()),
+					)
+				}
+			}
 		}
 
 		// If the method is intercepted, verify it has the authorization metadata
 		if ok && interception != nil {
 			// Try to get the authorization metadata from the context
-			_, err := gogrpcmd.GetCtxMetadataAuthorizationToken(
+			_, authErr := gogrpcmd.GetCtxMetadataAuthorizationToken(
 				ctx,
 			)
-			if err != nil {
+			if authErr != nil {
 				if i.logger != nil {
 					i.logger.Warn(
 						"Missing authorization metadata for intercepted method",
 						slog.String("method", method),
 						slog.String("interception", interception.String()),
-						slog.String("error", err.Error()),
+						slog.String("error", authErr.Error()),
 					)
 				}
 				return status.Errorf(

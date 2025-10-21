@@ -1,4 +1,4 @@
-package outgoing_ctx
+package outgoing
 
 import (
 	"google.golang.org/grpc"

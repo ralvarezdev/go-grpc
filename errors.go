@@ -1,4 +1,4 @@
-package go_grpc
+package gogrpc
 
 import (
 	"errors"
