@@ -78,7 +78,7 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Validate the token and get the validated claims
-		claims, err := i.validator.ValidateClaims(rawToken, *interception)
+		claims, err := i.validator.ValidateClaims(ctx, rawToken, *interception)
 		if err != nil {
 			if errors.Is(err, gojwtvalidator.ErrNilClaims) {
 				return nil, status.Error(codes.Unauthenticated, err.Error())

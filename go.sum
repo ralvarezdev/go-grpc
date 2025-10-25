@@ -34,6 +34,8 @@ github.com/ralvarezdev/go-jwt v0.6.6 h1:U0HhCK77NgN8a8ocCdt4XxNf2I0b1SobBByrZJDZ
 github.com/ralvarezdev/go-jwt v0.6.6/go.mod h1:IYxfSuGFB/CTBQtdb79VuXFrMx8ZQBXqJmQV7nTyTas=
 github.com/ralvarezdev/go-jwt v0.7.0 h1:9LFuKDZC6wuQDWNneIHkxAaFKJRmc2AOGaGYbQ2qbmg=
 github.com/ralvarezdev/go-jwt v0.7.0/go.mod h1:BCnVeeltRoh6MZ8/0Z1fgYb1YIlo8CgKWlsKjHt3zqo=
+github.com/ralvarezdev/go-jwt v0.7.1 h1:FEYmfwy+LViS4EYhQ1Sszt1xW3FYs02mMHB2Brsp8Rc=
+github.com/ralvarezdev/go-jwt v0.7.1/go.mod h1:gxw+uNBMGVTfEqpmPbOw5wtyDkCR6tPzi+SF7SM6B8o=
 github.com/ralvarezdev/go-reflect v0.2.10 h1:H6N1dpvxszWrfToBZ6ZVyD87qvtQEOrCV0itix9MmCI=
 github.com/ralvarezdev/go-reflect v0.2.10/go.mod h1:HFctB1EEZdN5+T9luOalTmdRfIQ9SwQd4LtxXDGicbE=
 github.com/ralvarezdev/go-reflect v0.2.12 h1:Bttzr/oxXLaaKm9fPIfDsZuFfMQsPw/VJijCml2FD60=
