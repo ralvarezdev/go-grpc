@@ -3,6 +3,7 @@ package errorhandler
 import (
 	"context"
 	"log/slog"
+	"runtime/debug"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -50,13 +51,14 @@ func (i Interceptor) HandleError() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (value any, err error) {
 		defer func() {
-			if r := recover(); r != nil {
+			if r := recover(); r != nil {				
 				// Log the panic
 				if i.logger != nil {
 					i.logger.Error(
 						"Panic recovered",
 						slog.Any("method", info.FullMethod),
 						slog.Any("error", r),
+						slog.String("stack_trace", string(debug.Stack())),
 					)
 				}
 
