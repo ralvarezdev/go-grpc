@@ -116,7 +116,7 @@ func (i Interceptor) Verify() grpc.UnaryClientInterceptor {
 
 		// Add GCloud authorization if available
 		var err error
-		if i.gCloudAccessToken == nil {
+		if i.gCloudAccessToken != nil {
 			ctx, err = gogrpcmd.SetCtxMetadataGCloudAuthorizationToken(
 				ctx,
 				*i.gCloudAccessToken,
