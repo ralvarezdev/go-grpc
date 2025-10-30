@@ -7,7 +7,7 @@ require (
 	github.com/ralvarezdev/go-flags v0.3.8
 	github.com/ralvarezdev/go-jwt v0.7.1
 	github.com/ralvarezdev/go-reflect v0.2.12
-	github.com/ralvarezdev/go-validator v0.6.17
+	github.com/ralvarezdev/go-validator v0.6.19
 	go.mongodb.org/mongo-driver v1.17.4
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8
 	google.golang.org/grpc v1.76.0
