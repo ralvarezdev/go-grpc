@@ -51,7 +51,7 @@ func (i Interceptor) HandleError() grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (value any, err error) {
 		defer func() {
-			if r := recover(); r != nil {				
+			if r := recover(); r != nil {
 				// Log the panic
 				if i.logger != nil {
 					i.logger.Error(

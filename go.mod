@@ -6,10 +6,10 @@ require (
 	github.com/ralvarezdev/go-api-key v0.1.4
 	github.com/ralvarezdev/go-flags v0.3.8
 	github.com/ralvarezdev/go-jwt v0.7.1
-	github.com/ralvarezdev/go-reflect v0.2.12
-	github.com/ralvarezdev/go-validator v0.6.20
+	github.com/ralvarezdev/go-reflect v0.3.1
+	github.com/ralvarezdev/go-validator v0.7.3
 	go.mongodb.org/mongo-driver v1.17.4
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20251022142026-3a174f9686a8
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251029180050-ab9386a59fda
 	google.golang.org/grpc v1.76.0
 )
 
@@ -19,7 +19,7 @@ require (
 	github.com/golang/snappy v1.0.0 // indirect
 	github.com/klauspost/compress v1.18.1 // indirect
 	github.com/montanaflynn/stats v0.7.1 // indirect
-	github.com/ralvarezdev/go-strings v0.1.17 // indirect
+	github.com/ralvarezdev/go-strings v0.2.1 // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
