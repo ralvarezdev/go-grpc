@@ -30,8 +30,8 @@ github.com/ralvarezdev/go-reflect v0.3.1 h1:+u59QNddIwI0lQWhWqO5gYGKC4oR0DP50uEp
 github.com/ralvarezdev/go-reflect v0.3.1/go.mod h1:CsZqMmJCXYow9l2YQIdvIe/q7aeRtlA3gq0r9dmLEN0=
 github.com/ralvarezdev/go-strings v0.2.2 h1:lqrI4GJdA/fIDNGgNk0O0ja2YE3jG9yQpql0mA+J4Fk=
 github.com/ralvarezdev/go-strings v0.2.2/go.mod h1:8sFOqmPJpqzS7bTjf91EzUCITnwpmkfifwY80GxV5r8=
-github.com/ralvarezdev/go-validator v0.7.4 h1:21sNWukGqhCxmtBUEbnF+CbrhAgOq6Er90PTX+XeRJI=
-github.com/ralvarezdev/go-validator v0.7.4/go.mod h1:ZRRgq75OCAMRsiL8/Xlq0zHaUSEq6A3zmEgvSoOLFfs=
+github.com/ralvarezdev/go-validator v0.7.5 h1:81qSQZFpVuvxpFMq98RKILvdlUyFw8AkxhcjFi+CIDM=
+github.com/ralvarezdev/go-validator v0.7.5/go.mod h1:JkW3mU7Y7PZJxxT4mfwkYV/Pz/YSRI23NpP0W2hF/Y0=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.2 h1:FHX5I5B4i4hKRVRBCFRxq1iQRej7WO3hhBuJf+UUySY=
