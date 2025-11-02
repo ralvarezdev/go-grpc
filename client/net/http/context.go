@@ -12,7 +12,7 @@ import (
 // SetOutgoingCtxMetadataAuthorizationToken is a helper function to set the authorization metadata to the outgoing
 // context
 //
-// Retrieves the authorization from the request context and sets it to the outgoing context
+// # Retrieves the authorization from the request context and sets it to the outgoing context
 //
 // Parameters:
 //

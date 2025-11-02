@@ -63,30 +63,6 @@ func GetIncomingCtxMetadataValue(ctx context.Context, key string) ([]string, err
 	return GetMetadataValue(md, key)
 }
 
-// DeleteIncomingCtxMetadataValue deletes the value for a given key from the incoming context metadata
-//
-// Parameters:
-//
-//   - ctx: The incoming context to get the metadata from
-//   - key: The key to delete the value for
-//
-// Returns:
-//
-//   - context.Context: The context with the value deleted
-//   - error: An error if the key is not found or any other error occurs
-func DeleteIncomingCtxMetadataValue(ctx context.Context, key string) (
-	context.Context,
-	error,
-) {
-	// Get the metadata from the context
-	md, err := GetIncomingCtxMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	md = DeleteMetadataValue(md, key)
-	return metadata.NewIncomingContext(ctx, md), nil
-}
-
 // GetIncomingCtxMetadataBearerToken gets the bearer token from the incoming context metadata
 //
 // Parameters:
@@ -257,7 +233,7 @@ func SetOutgoingCtxMetadataBearerToken(
 	key, token string,
 ) (context.Context, error) {
 	md := SetMetadataBearerToken(GetOutgoingCtxMetadata(ctx), key, token)
-	return metadata.NewIncomingContext(ctx, md), nil
+	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
 // SetOutgoingCtxMetadataAuthorizationToken sets the authorization token to the metadata
@@ -275,7 +251,7 @@ func SetOutgoingCtxMetadataAuthorizationToken(
 	token string,
 ) (context.Context, error) {
 	md := SetMetadataAuthorizationToken(GetOutgoingCtxMetadata(ctx), token)
-	return metadata.NewIncomingContext(ctx, md), nil
+	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
 // SetOutgoingCtxMetadataGCloudAuthorizationToken sets the GCloud authorization token to the metadata
@@ -297,7 +273,7 @@ func SetOutgoingCtxMetadataGCloudAuthorizationToken(
 		GetOutgoingCtxMetadata(ctx),
 		token,
 	)
-	return metadata.NewIncomingContext(ctx, md), nil
+	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
 // SetOutgoingCtxMetadataRefreshToken sets the refresh token to the metadata
@@ -319,7 +295,7 @@ func SetOutgoingCtxMetadataRefreshToken(
 		GetOutgoingCtxMetadata(ctx),
 		refreshToken,
 	)
-	return metadata.NewIncomingContext(ctx, md), nil
+	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
 // SetOutgoingCtxMetadataAccessToken sets the access token to the metadata
@@ -341,7 +317,7 @@ func SetOutgoingCtxMetadataAccessToken(
 		GetOutgoingCtxMetadata(ctx),
 		accessToken,
 	)
-	return metadata.NewIncomingContext(ctx, md), nil
+	return metadata.NewOutgoingContext(ctx, md), nil
 }
 
 // GetIncomingCtxMetadataAccessToken gets the access token from the incoming context metadata
@@ -361,94 +337,4 @@ func GetIncomingCtxMetadataAccessToken(ctx context.Context) (string, error) {
 		return "", err
 	}
 	return GetMetadataAccessToken(md)
-}
-
-// ClearIncomingCtxMetadataAuthorizationToken clears the authorization token from the incoming context metadata
-//
-// Parameters:
-//
-//   - ctx: The incoming context to clear the token from
-//
-// Returns:
-//
-//   - context.Context: The context with the token cleared
-//   - error: An error if the metadata is not found or any other error occurs
-func ClearIncomingCtxMetadataAuthorizationToken(ctx context.Context) (
-	context.Context,
-	error,
-) {
-	// Get the metadata from the context
-	md, err := GetIncomingCtxMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	md = ClearMetadataAuthorizationToken(md)
-	return metadata.NewIncomingContext(ctx, md), nil
-}
-
-// ClearIncomingCtxMetadataGCloudAuthorizationToken clears the GCloud authorization token from the incoming context
-// metadata
-//
-// Parameters:
-//
-//   - ctx: The incoming context to clear the token from
-//
-// Returns:
-//
-//   - context.Context: The context with the token cleared
-//   - error: An error if the metadata is not found or any other error occurs
-func ClearIncomingCtxMetadataGCloudAuthorizationToken(ctx context.Context) (
-	context.Context,
-	error,
-) {
-	// Get the metadata from the context
-	md, err := GetIncomingCtxMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	md = ClearMetadataAuthorizationToken(md)
-	return metadata.NewIncomingContext(ctx, md), nil
-}
-
-// ClearIncomingCtxMetadataRefreshToken clears the refresh token from the incoming context metadata
-//
-// Parameters:
-//
-//   - ctx: The incoming context to clear the token from
-//
-// Returns:
-//
-//   - context.Context: The context with the token cleared
-//   - error: An error if the metadata is not found or any other error occurs
-func ClearIncomingCtxMetadataRefreshToken(ctx context.Context) (
-	context.Context,
-	error,
-) {
-	// Get the metadata from the context
-	md, err := GetIncomingCtxMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	md = ClearMetadataRefreshToken(md)
-	return metadata.NewIncomingContext(ctx, md), nil
-}
-
-// ClearIncomingCtxMetadataAccessToken clears the access token from the incoming context metadata
-//
-// Parameters:
-//
-//   - ctx: The incoming context to clear the token from
-//
-// Returns:
-//
-//   - context.Context: The context with the token cleared
-//   - error: An error if the metadata is not found or any other error occurs
-func ClearIncomingCtxMetadataAccessToken(ctx context.Context) (context.Context, error) {
-	// Get the metadata from the context
-	md, err := GetIncomingCtxMetadata(ctx)
-	if err != nil {
-		return nil, err
-	}
-	md = ClearMetadataAccessToken(md)
-	return metadata.NewIncomingContext(ctx, md), nil
 }
