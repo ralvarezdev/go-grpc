@@ -73,7 +73,7 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Get the raw token from the metadata
-		rawToken, err := gogrpcmd.GetCtxMetadataAuthorizationToken(ctx)
+		rawToken, err := gogrpcmd.GetIncomingCtxMetadataAuthorizationToken(ctx)
 		if err != nil {
 			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}

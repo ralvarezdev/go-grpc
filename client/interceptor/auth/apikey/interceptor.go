@@ -93,7 +93,7 @@ func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 		}
 
 		// Set context metadata for the gRPC client with the API key
-		ctx, err := gogrpcmd.SetCtxMetadataAuthorizationToken(
+		ctx, err := gogrpcmd.SetOutgoingCtxMetadataAuthorizationToken(
 			ctx,
 			i.apiKey,
 		)

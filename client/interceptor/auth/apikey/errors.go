@@ -5,6 +5,6 @@ import (
 )
 
 var (
-	ErrEmptyAPIKey = errors.New("empty API key")
+	ErrEmptyAPIKey                           = errors.New("empty API key")
 	ErrFailedToSetMetadataAuthorizationToken = errors.New("failed to set metadata authorization token")
 )

@@ -179,14 +179,14 @@ func (d DefaultService) CreateValidateFn(
 	requestExample any,
 	cache bool,
 	auxiliaryValidatorFns ...any,
-) (ValidateFn, error) {	
+) (ValidateFn, error) {
 	// Check if the validate function is already cached
 	if cache && d.validateFns != nil {
 		if validateFn, ok := d.validateFns[goreflect.UniqueTypeReference(requestExample)]; ok {
 			return validateFn, nil
 		}
 	}
-	
+
 	// Get the type of the request
 	requestType := goreflect.GetDereferencedType(requestExample)
 
@@ -202,7 +202,7 @@ func (d DefaultService) CreateValidateFn(
 		}
 		return nil, err
 	}
-	
+
 	// Create the inner validate function
 	innerValidateFn, err := d.service.CreateValidateFn(
 		mapper,

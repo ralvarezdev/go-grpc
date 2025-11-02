@@ -8,7 +8,6 @@ import (
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials/oauth"
 	"google.golang.org/grpc/status"
 
 	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
@@ -17,33 +16,10 @@ import (
 type (
 	// Interceptor is the interceptor for the authentication
 	Interceptor struct {
-		interceptions     map[string]*gojwttoken.Token
-		gCloudAccessToken *string
-		logger            *slog.Logger
-	}
-
-	// Options is the options for the interceptor
-	Options struct {
-		GCloudTokenSource *oauth.TokenSource
+		interceptions map[string]*gojwttoken.Token
+		logger        *slog.Logger
 	}
 )
-
-// NewOptions creates a new options for the interceptor
-//
-// Parameters:
-//
-//   - gCloudTokenSource: the OAuth token source to get the access token for Google Cloud services
-//
-// Returns:
-//
-//   - *Options: the options
-func NewOptions(
-	gCloudTokenSource *oauth.TokenSource,
-) *Options {
-	return &Options{
-		GCloudTokenSource: gCloudTokenSource,
-	}
-}
 
 // NewInterceptor creates a new authentication interceptor
 //
@@ -51,33 +27,18 @@ func NewOptions(
 //
 //   - interceptions: the gRPC interceptions to determine which methods require authentication
 //   - options: the options for the interceptor
-//   - logger: the logger to use for logging
 //
 // Returns:
 //
 //   - *Interceptor: the interceptor
-//   - error: an error if the token source or the gRPC interceptions is nil or any other error occurs
+//   - error: an error if the gRPC interceptions is nil or any other error occurs
 func NewInterceptor(
 	interceptions map[string]*gojwttoken.Token,
-	options *Options,
 	logger *slog.Logger,
 ) (*Interceptor, error) {
 	// Check if the gRPC interceptions is nil
 	if interceptions == nil {
 		return nil, gojwtgrpc.ErrNilGRPCInterceptions
-	}
-
-	// Initialize the access token variable
-	var gCloudAccessToken *string
-	if options != nil && options.GCloudTokenSource != nil {
-		// Get the access token from the token source
-		token, err := options.GCloudTokenSource.Token()
-		if err != nil {
-			return nil, err
-		}
-
-		// Set the access token
-		gCloudAccessToken = &token.AccessToken
 	}
 
 	if logger != nil {
@@ -90,9 +51,8 @@ func NewInterceptor(
 	}
 
 	return &Interceptor{
-		gCloudAccessToken: gCloudAccessToken,
-		interceptions:     interceptions,
-		logger:            logger,
+		interceptions: interceptions,
+		logger:        logger,
 	}, nil
 }
 
@@ -111,30 +71,11 @@ func (i Interceptor) Verify() grpc.UnaryClientInterceptor {
 		invoker grpc.UnaryInvoker,
 		opts ...grpc.CallOption,
 	) error {
-		// Check if the method should be intercepted
+		// Check if the method should be intercepted, if so, verify the authorization metadata is set
 		interception, ok := i.interceptions[method]
-
-		// Add GCloud authorization if available
-		var err error
-		if i.gCloudAccessToken != nil {
-			ctx, err = gogrpcmd.SetCtxMetadataGCloudAuthorizationToken(
-				ctx,
-				*i.gCloudAccessToken,
-			)
-			if err != nil {
-				if i.logger != nil {
-					i.logger.Warn(
-						"Failed to set GCloud metadata authorization token for the gRPC client",
-						slog.String("error", err.Error()),
-					)
-				}
-			}
-		}
-
-		// If the method is intercepted, verify it has the authorization metadata
 		if ok && interception != nil {
 			// Try to get the authorization metadata from the context
-			_, authErr := gogrpcmd.GetCtxMetadataAuthorizationToken(
+			_, authErr := gogrpcmd.GetOutgoingCtxMetadataAuthorizationToken(
 				ctx,
 			)
 			if authErr != nil {

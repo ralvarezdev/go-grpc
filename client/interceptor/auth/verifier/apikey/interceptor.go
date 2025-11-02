@@ -82,7 +82,7 @@ func (i Interceptor) Verify() grpc.UnaryClientInterceptor {
 		// If the method is intercepted, verify it has the authorization metadata
 		if ok {
 			// Try to get the authorization metadata from the context
-			_, err := gogrpcmd.GetCtxMetadataAuthorizationToken(
+			_, err := gogrpcmd.GetOutgoingCtxMetadataAuthorizationToken(
 				ctx,
 			)
 			if err != nil {
