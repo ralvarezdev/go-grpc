@@ -2,7 +2,6 @@ package validator
 
 import (
 	"log/slog"
-	"reflect"
 	"time"
 
 	goreflect "github.com/ralvarezdev/go-reflect"
@@ -164,44 +163,6 @@ func (d DefaultService) Password(
 	)
 }
 
-// createMapper creates a mapper for a given struct
-//
-// Parameters:
-//
-//   - structInstance: the struct instance to create the mapper for
-//
-// Returns:
-//
-//   - *govalidatormapper.Mapper: the mapper
-//   - error: if there was an error creating the mapper
-func (d DefaultService) createMapper(
-	structInstance any,
-) (*govalidatormapper.Mapper, reflect.Type, error) {
-	// Get the type of the request
-	structInstanceType := goreflect.GetTypeOf(structInstance)
-
-	// Dereference the request type if it is a pointer
-	if structInstanceType.Kind() == reflect.Pointer {
-		structInstanceType = structInstanceType.Elem()
-	} else {
-		structInstance = &structInstance
-	}
-
-	// Create the mapper
-	mapper, err := d.generator.NewMapper(structInstance)
-	if err != nil {
-		if d.logger != nil {
-			d.logger.Error(
-				"Failed to create mapper",
-				slog.String("type", structInstanceType.String()),
-				slog.Any("error", err),
-			)
-		}
-		return nil, structInstanceType, err
-	}
-	return mapper, structInstanceType, nil
-}
-
 // CreateValidateFn creates a validate function for a given request example
 //
 // Parameters:
@@ -218,20 +179,30 @@ func (d DefaultService) CreateValidateFn(
 	requestExample any,
 	cache bool,
 	auxiliaryValidatorFns ...any,
-) (ValidateFn, error) {
-	// Create the mapper
-	mapper, requestType, err := d.createMapper(requestExample)
-	if err != nil {
-		return nil, err
-	}
-
+) (ValidateFn, error) {	
 	// Check if the validate function is already cached
 	if cache && d.validateFns != nil {
-		if validateFn, ok := d.validateFns[goreflect.UniqueTypeReference(mapper.GetStructInstance())]; ok {
+		if validateFn, ok := d.validateFns[goreflect.UniqueTypeReference(requestExample)]; ok {
 			return validateFn, nil
 		}
 	}
+	
+	// Get the type of the request
+	requestType := goreflect.GetDereferencedType(requestExample)
 
+	// Create the mapper
+	mapper, err := d.generator.NewMapper(requestExample)
+	if err != nil {
+		if d.logger != nil {
+			d.logger.Error(
+				"Failed to create mapper",
+				slog.String("type", requestType.String()),
+				slog.Any("error", err),
+			)
+		}
+		return nil, err
+	}
+	
 	// Create the inner validate function
 	innerValidateFn, err := d.service.CreateValidateFn(
 		mapper,
@@ -251,11 +222,8 @@ func (d DefaultService) CreateValidateFn(
 
 	// Create the wrapped validate function
 	validateFn := func(request any) error {
-		// Get a new instance of the body
-		dest := goreflect.NewInstanceFromType(requestType)
-
 		// Validate the request
-		validations, innerErr := innerValidateFn(dest)
+		validations, innerErr := innerValidateFn(request)
 		if innerErr != nil {
 			if d.logger != nil {
 				d.logger.Error(
