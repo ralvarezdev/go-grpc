@@ -12,19 +12,17 @@ import (
 // SetOutgoingCtxMetadataAuthorizationToken is a helper function to set the authorization metadata to the outgoing
 // context
 //
-// Retrieves the authorization from the request context and sets it in the provided context.
+// Retrieves the authorization from the request context and sets it to the outgoing context
 //
 // Parameters:
 //
-//   - ctx: the outgoing context for the gRPC call
-//   - r: the request to get the authorization from
+//   - r: the request to get the authorization from and from which to get the context
 //
 // Returns:
 //
 //   - context.Context: the context with the authorization metadata
 //   - error: an error if the request is nil
 func SetOutgoingCtxMetadataAuthorizationToken(
-	ctx context.Context,
 	r *http.Request,
 ) (context.Context, error) {
 	if r == nil {
@@ -38,5 +36,5 @@ func SetOutgoingCtxMetadataAuthorizationToken(
 	}
 
 	// Set the authorization metadata to the outgoing context
-	return gogrpcmd.SetOutgoingCtxMetadataAuthorizationToken(ctx, token)
+	return gogrpcmd.SetOutgoingCtxMetadataAuthorizationToken(r.Context(), token)
 }
