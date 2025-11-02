@@ -6,6 +6,8 @@ import (
 
 	goapikeygrpc "github.com/ralvarezdev/go-api-key/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
@@ -96,9 +98,15 @@ func (i Interceptor) Authenticate() grpc.UnaryClientInterceptor {
 			i.apiKey,
 		)
 		if err != nil {
-			i.logger.Error(
-				"Failed to set metadata authorization token for the gRPC client",
-				slog.String("error", err.Error()),
+			if i.logger != nil {
+				i.logger.Error(
+					"Failed to set metadata authorization token for the gRPC client",
+					slog.String("error", err.Error()),
+				)
+			}
+			return status.Error(
+				codes.Internal,
+				ErrFailedToSetMetadataAuthorizationToken.Error(),
 			)
 		}
 
