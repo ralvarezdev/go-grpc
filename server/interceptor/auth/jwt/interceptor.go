@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
-	gojwtgrpcctx "github.com/ralvarezdev/go-jwt/grpc/context"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	gojwtvalidator "github.com/ralvarezdev/go-jwt/token/validator"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -46,7 +45,7 @@ func NewInterceptor(
 		return nil, gojwtvalidator.ErrNilValidator
 	}
 	if interceptions == nil {
-		return nil, gojwtgrpc.ErrNilGRPCInterceptions
+		return nil, gogrpc.ErrNilInterceptions
 	}
 
 	return &Interceptor{
@@ -95,8 +94,8 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		}
 
 		// Set the raw token and token claims to the context
-		ctx = gojwtgrpcctx.SetCtxToken(ctx, rawToken)
-		ctx = gojwtgrpcctx.SetCtxTokenClaims(ctx, claims)
+		ctx = gojwtgrpc.SetCtxToken(ctx, rawToken)
+		ctx = gojwtgrpc.SetCtxTokenClaims(ctx, claims)
 
 		return handler(ctx, req)
 	}

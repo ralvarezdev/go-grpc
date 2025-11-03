@@ -10,5 +10,5 @@ var (
 )
 
 var (
-	ErrNilInterceptions = errors.New("nil interceptions")
+	ErrNilInterceptions = errors.New("grpc interceptions map cannot be nil")
 )

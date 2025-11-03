@@ -4,11 +4,12 @@ import (
 	"context"
 	"log/slog"
 
-	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	gogrpc "github.com/ralvarezdev/go-grpc"
 
 	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
@@ -38,7 +39,7 @@ func NewInterceptor(
 ) (*Interceptor, error) {
 	// Check if the gRPC interceptions is nil
 	if interceptions == nil {
-		return nil, gojwtgrpc.ErrNilGRPCInterceptions
+		return nil, gogrpc.ErrNilInterceptions
 	}
 
 	if logger != nil {

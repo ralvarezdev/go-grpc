@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	gojwt "github.com/ralvarezdev/go-jwt"
-	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	"google.golang.org/grpc/metadata"
 
 	gogrpc "github.com/ralvarezdev/go-grpc"
@@ -58,25 +57,25 @@ func DeleteMetadataValue(md metadata.MD, key string) metadata.MD {
 //   - error: An error if the token is not found or any other error occurs
 func GetMetadataBearerToken(md metadata.MD, key string) (string, error) {
 	// Get the value from the metadata
-	value, err := GetMetadataValue(md, key)
+	value, err := GetMetadataValue(md, gogrpc.AuthorizationMetadataKey)
 	if err != nil {
 		return "", err
 	}
 
 	// Check if the authorization value is valid
-	if len(value) <= gojwtgrpc.AuthorizationTokenIdx {
-		return "", gojwtgrpc.ErrAuthorizationMetadataNotProvided
+	if len(value) <= gogrpc.AuthorizationMetadataIndex {
+		return "", ErrAuthorizationMetadataNotProvided
 	}
 
 	// Get the authorization value from the metadata
-	authorizationValue := value[gojwtgrpc.AuthorizationTokenIdx]
+	authorizationValue := value[gogrpc.AuthorizationMetadataIndex]
 
 	// Split the authorization value by space
 	authorizationFields := strings.Split(authorizationValue, " ")
 
 	// Check if the authorization value is valid
 	if len(authorizationFields) != 2 || authorizationFields[0] != gojwt.BearerPrefix {
-		return "", gojwtgrpc.ErrAuthorizationMetadataInvalid
+		return "", ErrAuthorizationMetadataInvalid
 	}
 
 	return authorizationFields[1], nil

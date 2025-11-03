@@ -24,8 +24,8 @@ github.com/ralvarezdev/go-api-key v0.1.4 h1:QacXh5L7UZZCIW1riSFFoU7Nb0SUKJT1Zq6Y
 github.com/ralvarezdev/go-api-key v0.1.4/go.mod h1:P1pg+gLdshE154kgbFk363uv8HK353OMKxXqS9ttqjo=
 github.com/ralvarezdev/go-flags v0.3.8 h1:b/doNRr2HsniEpz8NjbH2vxJH5WMeymIx0LAzDIOnOc=
 github.com/ralvarezdev/go-flags v0.3.8/go.mod h1:R3yVBYvzwqfOp26LidaiJ/zftVAnPC3pKunVpV/vosE=
-github.com/ralvarezdev/go-jwt v0.7.4 h1:f9ovJubB/X1xL1cxeW+QNQ8y79Jh/YN9v74SiyYBYXY=
-github.com/ralvarezdev/go-jwt v0.7.4/go.mod h1:fXGHJ6oPHXgMNWlgR08emuxUklQKgEqgWsq69Jk7lDE=
+github.com/ralvarezdev/go-jwt v0.7.7 h1:umwEOsfv2kRObid/MB9DVIN37csEgrj7DtECw7dAQs0=
+github.com/ralvarezdev/go-jwt v0.7.7/go.mod h1:fXGHJ6oPHXgMNWlgR08emuxUklQKgEqgWsq69Jk7lDE=
 github.com/ralvarezdev/go-reflect v0.3.1 h1:+u59QNddIwI0lQWhWqO5gYGKC4oR0DP50uEpLxwdS/4=
 github.com/ralvarezdev/go-reflect v0.3.1/go.mod h1:CsZqMmJCXYow9l2YQIdvIe/q7aeRtlA3gq0r9dmLEN0=
 github.com/ralvarezdev/go-strings v0.2.2 h1:lqrI4GJdA/fIDNGgNk0O0ja2YE3jG9yQpql0mA+J4Fk=

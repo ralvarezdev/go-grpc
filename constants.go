@@ -4,6 +4,9 @@ const (
 	// AuthorizationMetadataKey is the key used for authorization in metadata.
 	AuthorizationMetadataKey = "authorization"
 
+	// AuthorizationMetadataIndex is the index used for authorization in metadata.
+	AuthorizationMetadataIndex = 0
+
 	// RefreshTokenMetadataKey is the key used for refresh token in metadata.
 	RefreshTokenMetadataKey = "x-refresh-token"
 

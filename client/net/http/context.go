@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	gojwtnethttpctx "github.com/ralvarezdev/go-jwt/net/http/context"
+	gojwtnethttp "github.com/ralvarezdev/go-jwt/net/http"
 
 	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
 )
@@ -30,7 +30,7 @@ func SetOutgoingCtxMetadataAuthorizationToken(
 	}
 
 	// Get the authorization from the request context
-	token, err := gojwtnethttpctx.GetCtxToken(r)
+	token, err := gojwtnethttp.GetCtxToken(r)
 	if err != nil {
 		return nil, err
 	}

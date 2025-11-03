@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/ralvarezdev/go-api-key v0.1.4
 	github.com/ralvarezdev/go-flags v0.3.8
-	github.com/ralvarezdev/go-jwt v0.7.4
+	github.com/ralvarezdev/go-jwt v0.7.7
 	github.com/ralvarezdev/go-reflect v0.3.1
 	github.com/ralvarezdev/go-validator v0.7.5
 	go.mongodb.org/mongo-driver v1.17.6
