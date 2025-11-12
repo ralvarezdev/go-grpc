@@ -74,7 +74,22 @@ func (i Interceptor) Verify() grpc.UnaryClientInterceptor {
 	) error {
 		// Check if the method should be intercepted, if so, verify the authorization metadata is set
 		interception, ok := i.interceptions[method]
-		if ok && interception != nil {
+		if !ok {
+			// Log the error and return an internal server error
+			if i.logger != nil {
+				i.logger.Error(
+					"Could not find interception for method",
+					slog.String("method", method),
+				)
+			}
+			
+			return status.Errorf(
+				codes.Internal,
+				gogrpc.InternalServerError,
+				method,
+			)
+		}
+		if interception == nil {
 			// Try to get the authorization metadata from the context
 			_, authErr := gogrpcmd.GetOutgoingCtxMetadataAuthorizationToken(
 				ctx,
