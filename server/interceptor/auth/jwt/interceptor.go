@@ -2,19 +2,16 @@ package jwt
 
 import (
 	"context"
-	"errors"
 
 	gojwtgrpc "github.com/ralvarezdev/go-jwt/grpc"
 	gojwttoken "github.com/ralvarezdev/go-jwt/token"
 	gojwtvalidator "github.com/ralvarezdev/go-jwt/token/validator"
-	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	gogrpc "github.com/ralvarezdev/go-grpc"
 	gogrpcmd "github.com/ralvarezdev/go-grpc/metadata"
-	gogrpcserver "github.com/ralvarezdev/go-grpc/server"
 )
 
 type (
@@ -79,18 +76,7 @@ func (i Interceptor) Authenticate() grpc.UnaryServerInterceptor {
 		// Validate the token and get the validated claims
 		claims, err := i.validator.ValidateClaims(ctx, rawToken, *interception)
 		if err != nil {
-			if errors.Is(err, gojwtvalidator.ErrNilClaims) {
-				return nil, status.Error(codes.Unauthenticated, err.Error())
-			}
-
-			if errors.Is(err, mongo.ErrNoDocuments) {
-				return nil, status.Error(
-					codes.Unauthenticated,
-					gogrpcserver.ErrTokenHasExpired.Error(),
-				)
-			}
-
-			return nil, status.Error(codes.Internal, gogrpc.InternalServerError)
+			return nil, status.Error(codes.Unauthenticated, err.Error())
 		}
 
 		// Set the raw token and token claims to the context
