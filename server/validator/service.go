@@ -1,9 +1,11 @@
 package validator
 
 import (
+	"fmt"
 	"log/slog"
 	"time"
 
+	"connectrpc.com/connect"
 	goreflect "github.com/ralvarezdev/go-reflect"
 	govalidatormapper "github.com/ralvarezdev/go-validator/mapper"
 	govalidatormapperparser "github.com/ralvarezdev/go-validator/mapper/parser"
@@ -11,8 +13,6 @@ import (
 	govalidatormappervalidation "github.com/ralvarezdev/go-validator/mapper/validation"
 	govalidatormappervalidator "github.com/ralvarezdev/go-validator/mapper/validator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type (
@@ -200,7 +200,10 @@ func (d DefaultService) CreateValidateFn(
 				slog.Any("error", err),
 			)
 		}
-		return nil, err
+		return nil, connect.NewError(
+			connect.CodeInternal,
+			fmt.Errorf(ErrFailedToCreateMapper, requestType.String()),
+		)
 	}
 
 	// Create the inner validate function
@@ -217,7 +220,10 @@ func (d DefaultService) CreateValidateFn(
 				slog.Any("error", err),
 			)
 		}
-		return nil, err
+		return nil, connect.NewError(
+			connect.CodeInternal,
+			fmt.Errorf(ErrFailedToCreateValidateFunction, requestType.String()),
+		)
 	}
 
 	// Create the wrapped validate function
@@ -232,7 +238,10 @@ func (d DefaultService) CreateValidateFn(
 					slog.Any("error", innerErr),
 				)
 			}
-			return status.Error(codes.Internal, "failed to validate request")
+			return connect.NewError(
+				connect.CodeInternal,
+				fmt.Errorf(ErrFailedToValidateRequest, requestType.String()),
+			)
 		}
 
 		// Check if the error is nil and there are no validations
@@ -250,25 +259,21 @@ func (d DefaultService) CreateValidateFn(
 					slog.Any("validations", validations),
 				)
 			}
-			return status.Error(codes.Internal, "failed to validate request")
+			return connect.NewError(
+				connect.CodeInternal,
+				fmt.Errorf(ErrFailedToAssertValidationsToBadRequest, requestType.String()),
+			)
 		}
 
 		// Create status with details
-		st := status.New(codes.InvalidArgument, "validation failed")
-		stWithDetails, detailsErr := st.WithDetails(badRequest)
-		if detailsErr != nil {
-			if d.logger != nil {
-				d.logger.Error(
-					"Failed to add details to status",
-					slog.String("type", requestType.String()),
-					slog.Any("error", detailsErr),
-				)
-			}
-			return status.Error(codes.Internal, "failed to validate request")
+		connectErr := connect.NewError(
+			connect.CodeInvalidArgument,
+			ErrValidationsFailed,
+		)
+		if detail, detailErr := connect.NewErrorDetail(badRequest); detailErr == nil {
+			connectErr.AddDetail(detail)
 		}
-
-		// Return error in your gRPC handler
-		return stWithDetails.Err()
+		return connectErr
 	}
 
 	// Cache the validate function
@@ -302,7 +307,7 @@ func (d DefaultService) Validate(
 		auxiliaryValidatorFns...,
 	)
 	if err != nil {
-		return status.Error(codes.Internal, "failed to validate request")
+		return err
 	}
 
 	// Execute the validate function

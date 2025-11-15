@@ -3,6 +3,7 @@ module github.com/ralvarezdev/go-grpc
 go 1.25.1
 
 require (
+	connectrpc.com/connect v1.19.1
 	github.com/ralvarezdev/go-api-key v0.1.4
 	github.com/ralvarezdev/go-flags v0.3.8
 	github.com/ralvarezdev/go-jwt v0.8.1
